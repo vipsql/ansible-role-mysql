@@ -5,7 +5,7 @@ daixijun.mysql
 
 支持以下几种集群模式:
 
-* [ ] Primary-Standby 结构
+* [x] Master-Slave 主从同步
 * [x] MGR 单主模式
 * [x] MGR 多主模式
 
@@ -27,7 +27,10 @@ daixijun.mysql
 * **mysql_pidfile**: PID文件位置(默认 /var/run/mysqld/mysqld.pid)
 * **mysql_socket**: Socket文件位置(默认 /var/run/mysqld/mysqld.sock)
 * **mysql_root_password**: root账号的密码
-* **mysql_cluster_type**: 集群类型(默认 mgr) 可选 mgr(Mysql Group Replication)/ms(Master-Slave)
+* **mysql_cluster_type**: 集群类型(默认 mgr) 可选 `mgr`(Mysql Group Replication)/`ms`(Master-Slave)
+* **mysql_cluster_role**: Master-Slave 模式下的实例角色，可选: `master` / `slave`
+* **mysql_replication_master**: Master-Slave 模式下Master实例的名称
+* **mysql_repl_user**： 用于复制的账号，默认为 `repl`
 * **mysql_repl_password**: 用于主从/组复制的账号的密码
 * **mysql_group_replication_name**: 组复制集群名
 * **mysql_group_replication_single_primary_mode**: MGR集群是否为单主模式(默认 true)
@@ -64,8 +67,7 @@ BSD
 TODO
 -------
 
-* [ ] 主备架构(Primary-Standby)
-<!-- * [ ] mysql_user 模块对于mysql8.0以上的版本，给用户授权`ALL`权限的时候会出现幂等性问题 -->
+* [ ] mysql_user 模块对于mysql8.0以上的版本，给用户授权`ALL`权限的时候会出现幂等性问题 [Idempotence all grant](https://github.com/ansible/ansible/pull/57460)
 
 联系方式
 ------------------
