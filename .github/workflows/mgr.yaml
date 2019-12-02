@@ -8,7 +8,7 @@ jobs:
       max-parallel: 4
       matrix:
         python-version: [2.7, 3.7]
-        playbook: [mgr_single_primary.yml, mgr_multi_primary.yaml]
+        playbook: [single_primary.yml, multi_primary.yaml]
     services:
       docker:
         image: docker:18-dind
