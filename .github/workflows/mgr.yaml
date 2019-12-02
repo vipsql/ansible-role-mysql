@@ -1,5 +1,5 @@
 ---
-name: mysql group replication multiple primary
+name: mgr
 on: [push]
 jobs:
   test:
@@ -8,6 +8,7 @@ jobs:
       max-parallel: 4
       matrix:
         python-version: [2.7, 3.7]
+        playbook: [mgr_single_primary.yml, mgr_multi_primary.yaml]
     services:
       docker:
         image: docker:18-dind
@@ -25,7 +26,7 @@ jobs:
           pip install ansible molecule docker
       - name: Test with molecule
         env:
-          MOLECULE_PLAYBOOK: multi_primary.yml
+          MOLECULE_PLAYBOOK: ${{ mtrix.playbook }}
         run: |
           cd ..
           mv ansible-role-mysql daixijun.mysql
