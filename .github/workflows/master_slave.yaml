@@ -1,5 +1,5 @@
 ---
-name: mysql group replication multiple primary
+name: Master-Slave
 on: [push]
 jobs:
   test:
@@ -30,4 +30,4 @@ jobs:
           cd ..
           mv ansible-role-mysql daixijun.mysql
           cd daixijun.mysql
-          molecule test
+          molecule test --scenario-name master_slave

@@ -1,11 +1,6 @@
 ---
 name: mysql group replication single primary
-on:
-  push:
-    paths:
-      - "*"
-      - "!*.md"
-      - "!.travis.yml"
+on: [push]
 jobs:
   test:
     runs-on: ubuntu-latest
