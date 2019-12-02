@@ -35,7 +35,7 @@
     - slave.Is_Slave is defined
     - not slave.Is_Slave
     - mysql_cluster_role == 'slave'
-    - mysql_replication_master != ""
+    - mysql_replication_master | length > 0
 
 - name: Change the master in slave to start the replication
   mysql_replication:
@@ -52,7 +52,7 @@
     - slave.Is_Slave is defined
     - not slave.Is_Slave
     - mysql_cluster_role == 'slave'
-    - mysql_replication_master != ""
+    - mysql_replication_master | length > 0
     - repl_stat is defined
   ignore_errors: true
 
@@ -66,4 +66,4 @@
     - slave.Is_Slave is defined
     - not slave.Is_Slave
     - mysql_cluster_role == 'slave'
-    - mysql_replication_master != ""
+    - mysql_replication_master | length > 0
