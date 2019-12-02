@@ -1,0 +1,19 @@
+---
+- name: Converge
+  hosts: all
+  any_errors_fatal: yes
+  roles:
+    - role: daixijun.mysql
+      mysql_remote_src: no
+      mysql_download_url: mysql-{{ mysql_version }}-el7-x86_64.tar.gz
+      mysql_cluster_type: ms
+      mysql_databases:
+        - name: db1
+      mysql_users:
+        - name: monitor
+          password: monitor
+          priv: "sys.*:SELECT"
+        - name: proxysql
+          password: proxysql
+          priv: "*.*:INSERT,UPDATE,DELETE,SELECT,CREATE,DROP,ALTER"
+          # state: absent

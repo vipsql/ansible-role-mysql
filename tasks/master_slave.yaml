@@ -1,0 +1,69 @@
+---
+- name: Ensure replication user
+  mysql_user:
+    name: repl
+    host: "%"
+    password: "{{ mysql_repl_password }}"
+    login_user: root
+    login_password: "{{ mysql_root_password }}"
+    login_unix_socket: "{{ mysql_socket }}"
+    priv: "*.*:REPLICATION SLAVE"
+    sql_log_bin: false
+    state: present
+  when:
+    - mysql_cluster_role == 'master'
+
+- name: Check if slave is already configured for replication
+  mysql_replication:
+    mode: getslave
+    login_user: root
+    login_password: "{{ mysql_root_password }}"
+    login_unix_socket: "{{ mysql_socket }}"
+  ignore_errors: true
+  register: slave
+  when: mysql_cluster_role == 'slave'
+
+- name: Get the current master server replication status
+  mysql_replication:
+    mode: getmaster
+    login_user: root
+    login_password: "{{ mysql_root_password }}"
+    login_unix_socket: "{{ mysql_socket }}"
+  delegate_to: "{{ mysql_replication_master }}"
+  register: repl_stat
+  when:
+    - slave.Is_Slave is defined
+    - not slave.Is_Slave
+    - mysql_cluster_role == 'slave'
+    - mysql_replication_master != ""
+
+- name: Change the master in slave to start the replication
+  mysql_replication:
+    mode: changemaster
+    master_host: '{{ hostvars[mysql_replication_master]["ansible_default_ipv4"]["address"] }}'
+    master_user: "{{ mysql_repl_user | default('repl') }}"
+    master_password: "{{ mysql_repl_password }}"
+    master_log_file: "{{ repl_stat.File }}"
+    master_log_pos: "{{ repl_stat.Position }}"
+    login_user: root
+    login_password: "{{ mysql_root_password }}"
+    login_unix_socket: "{{ mysql_socket }}"
+  when:
+    - slave.Is_Slave is defined
+    - not slave.Is_Slave
+    - mysql_cluster_role == 'slave'
+    - mysql_replication_master != ""
+    - repl_stat is defined
+  ignore_errors: true
+
+- name: Start replication
+  mysql_replication:
+    mode: startslave
+    login_user: root
+    login_password: "{{ mysql_root_password }}"
+    login_host: 127.0.0.1
+  when:
+    - slave.Is_Slave is defined
+    - not slave.Is_Slave
+    - mysql_cluster_role == 'slave'
+    - mysql_replication_master != ""

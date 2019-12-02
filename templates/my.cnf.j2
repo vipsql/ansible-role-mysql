@@ -51,18 +51,31 @@ disabled_storage_engines        = "MyISAM,BLACKHOLE,FEDERATED,ARCHIVE"
 
 # Binary logging and Replication
 server_id                           = {{ ansible_play_hosts.index(inventory_hostname) + 1 }}
+log_timestamps                      = system
 binlog-row-image                    = MINIMAL
 binlog-rows-query-log-events        = ON
 log-bin-trust-function-creators     = TRUE
 log_bin                             = mysql-bin
 binlog_format                       = ROW
 binlog_checksum                     = NONE
-binlog_expire_logs_seconds          = 604800 # 7 days
+binlog_expire_logs_seconds          = 604800 # 7 days, 8.0以前叫 expire_logs_days,只能精确到天
 binlog_cache_size                   = 1M
 binlog_stmt_cache_size              = 1M
 max_binlog_size                     = 128M
-sync_binlog                         = 0
-log_timestamps                      = system
+sync_binlog                         = 1
+{% if mysql_cluster_type == 'ms' %}
+replicate-ignore-db                 = mysql
+replicate-ignore-db                 = test
+replicate-ignore-db                 = information_schema
+replicate-ignore-db                 = performance_schema
+replicate-ignore-db                 = sys
+{% if mysql_cluster_role == 'slave' %}
+relay-log                           = relay-bin
+relay-log-index                     = relay-bin-index
+read_only                           = 1  # slave为只读模式
+log_slow_slave_statements           = 1  # 在slave上开启慢查询日志，query时间等于 long_query_time
+{% endif %}
+{% endif %}
 
 # Slow Query log
 slow_query_log                  = 1

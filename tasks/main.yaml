@@ -139,6 +139,9 @@
 - import_tasks: mysql_group_replication.yaml
   when: mysql_cluster_type == 'mgr'
 
+- import_tasks: master_slave.yaml
+  when: mysql_cluster_type == 'ms'
+
 - name: Ensure business databases
   mysql_db:
     name: "{{ item.name }}"

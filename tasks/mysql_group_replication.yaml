@@ -1,7 +1,7 @@
 ---
 - name: Ensure replication user
   mysql_user:
-    name: repl
+    name: "{{ mysql_repl_user | default('repl') }}"
     host: "%"
     password: "{{ mysql_repl_password }}"
     login_user: root
