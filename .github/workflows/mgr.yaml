@@ -26,7 +26,7 @@ jobs:
           pip install ansible molecule docker
       - name: Test with molecule
         env:
-          MOLECULE_PLAYBOOK: ${{ mtrix.playbook }}
+          MOLECULE_PLAYBOOK: ${{ matrix.playbook }}
         run: |
           cd ..
           mv ansible-role-mysql daixijun.mysql
