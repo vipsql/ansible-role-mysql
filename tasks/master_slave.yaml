@@ -67,3 +67,24 @@
     - not slave.Is_Slave
     - mysql_cluster_role == 'slave'
     - mysql_replication_master | length > 0
+
+- name: Query Master-Slave Cluster status
+  mysql_replication:
+    mode: getslave
+    login_user: root
+    login_password: "{{ mysql_root_password }}"
+    login_unix_socket: "{{ mysql_socket }}"
+  register: ms_cluster_status
+  changed_when: false
+  when:
+    - mysql_cluster_role == 'slave'
+  tags:
+    - skip_ansible_lint
+
+- name: Show Master-Slave Cluster status
+  debug:
+    var: ms_cluster_status
+    verbosity: 2
+  when:
+    - mysql_cluster_role == 'slave'
+    - ms_cluster_status is not skipped
