@@ -28,19 +28,31 @@
       - python2-PyMySQL
     state: present
 
+- name: Download mysql {{ mysql_version }}
+  get_url:
+    url: "{{ mysql_download_url }}"
+    dest: "/usr/local/src/{{ mysql_download_url | basename }}"
+    timeout: 300
+  register: _mysql_package
+
 - name: Unarchive mysql binary package
   unarchive:
-    src: "{{ mysql_download_url }}"
+    src: "{{ _mysql_package.dest }}"
     dest: /usr/local/
     creates: /usr/local/mysql
-    remote_src: "{{ mysql_remote_src }}"
+    remote_src: true
     owner: mysql
     group: mysql
-  register: mysql_unarchive
+  when:
+    - _mysql_package is defined
+    - _mysql_package is changed
+  register: _mysql_unarchive
 
 - name: Move /usr/local/mysql-{{ mysql_version }}-el7-x86_64 => /usr/local/mysql
   shell: mv /usr/local/mysql-{{ mysql_version }}-el7-x86_64 /usr/local/mysql
-  when: mysql_unarchive is changed
+  when:
+    - _mysql_unarchive is defined
+    - _mysql_unarchive is changed
   tags:
     - skip_ansible_lint
 

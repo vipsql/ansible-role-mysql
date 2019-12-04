@@ -1,6 +1,5 @@
 ---
 mysql_version: 8.0.17
-mysql_remote_src: yes
 mysql_download_url: https://mirrors.tuna.tsinghua.edu.cn/mysql/downloads/MySQL-8.0/mysql-{{ mysql_version }}-el7-x86_64.tar.gz
 mysql_datadir: /data/mysql
 mysql_logdir: /var/log/mysqld

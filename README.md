@@ -20,7 +20,6 @@ daixijun.mysql
 --------------
 
 * **mysql_version**:  mysql 版本(默认 8.0.17)
-* **mysql_remote_src**: 是否需要从Ansible 控制机器上复制安装到目标机器,如果需要从网络上下载安装包，请设置为`true`
 * **mysql_download_url**: 免安装压缩包下载地址
 * **mysql_datadir**: 数据存放目录(默认 /data/mysql)
 * **mysql_logdir**: 日志存放目录(默认 /var/log/mysqld)
