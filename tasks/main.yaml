@@ -25,7 +25,8 @@
       - openssl-devel
       - libaio-devel
       - numactl-libs
-      - python2-PyMySQL
+      - python-PyMySQL
+      - python-cryptography
     state: present
 
 - name: Check pacakge exists
