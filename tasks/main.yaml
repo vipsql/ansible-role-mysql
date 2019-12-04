@@ -28,12 +28,20 @@
       - python2-PyMySQL
     state: present
 
+- name: Check pacakge exists
+  stat:
+    path: "/usr/local/src/{{ mysql_download_url | basename }}"
+  register: _package_stat
+
 - name: Download mysql {{ mysql_version }}
   get_url:
     url: "{{ mysql_download_url }}"
-    dest: "/usr/local/src/{{ mysql_download_url | basename }}"
+    dest: "/usr/local/src/"
+    checksum: "md5:{{ mysql_download_url }}.md5"
     timeout: 300
   register: _mysql_package
+  when:
+    - not _package_stat.stat.exists
 
 - name: Unarchive mysql binary package
   unarchive:
@@ -148,10 +156,12 @@
     sql_log_bin: false
     state: absent
 
-- import_tasks: mysql_group_replication.yaml
+- name: Include MGR tasks
+  include_tasks: mysql_group_replication.yaml
   when: mysql_cluster_type == 'mgr'
 
-- import_tasks: master_slave.yaml
+- name: Include Master-Slave tasks
+  include_tasks: master_slave.yaml
   when: mysql_cluster_type == 'ms'
 
 - name: Ensure business databases
