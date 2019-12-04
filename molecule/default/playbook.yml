@@ -5,7 +5,6 @@
   roles:
     - role: daixijun.mysql
       mysql_remote_src: no
-      mysql_download_url: mysql-{{ mysql_version }}-el7-x86_64.tar.gz
       mysql_group_replication_single_primary_mode: false
       # mysql_databases:
       #   - name: t1
