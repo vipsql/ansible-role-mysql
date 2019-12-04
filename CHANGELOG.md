@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.1.1](https://github.com/daixijun/ansible-role-mysql/compare/v1.1.0...v1.1.1) (2019-12-04)
+
+
+### Bug Fixes
+
+* 修复 PyMySQL 依赖 cryptography 模块的问题 ([15f4c5c](https://github.com/daixijun/ansible-role-mysql/commit/15f4c5c1c9eb9a951962a9b3f9237ffbf18fda2e))
+* 取消移除 mariadb-libs 包 ([67adc4e](https://github.com/daixijun/ansible-role-mysql/commit/67adc4e667144e168a22f2f5a4d8ad89b6c4a10f))
+
 ## [1.1.0](https://github.com/daixijun/ansible-role-mysql/compare/v1.0.0...v1.1.0) (2019-12-04)
 
 
