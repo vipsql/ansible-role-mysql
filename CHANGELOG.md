@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.1.2](https://github.com/daixijun/ansible-role-mysql/compare/v1.1.1...v1.1.2) (2019-12-05)
+
+
+### Bug Fixes
+
+* 修复删除的系统版本my.cnf路径 ([c363074](https://github.com/daixijun/ansible-role-mysql/commit/c363074c22bc07e2dc151f37863028c29f154c48))
+
 ### [1.1.1](https://github.com/daixijun/ansible-role-mysql/compare/v1.1.0...v1.1.1) (2019-12-04)
 
 
