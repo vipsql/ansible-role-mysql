@@ -10,9 +10,7 @@ services:
   - docker
 matrix:
   fast_finish: true
-python:
-  - "2.7"
-  - "3.7"
+python: "3.7"
 env:
   - MOLECULE_PLAYBOOK=single_primary.yml SCENARIO_NAME=default
   - MOLECULE_PLAYBOOK=multi_primary.yml SCENARIO_NAME=default
