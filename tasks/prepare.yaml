@@ -1,5 +1,8 @@
 ---
 - name: Remove old configutations
   file:
-    path: /et/my.cnf
+    path: "{{ item }}"
     state: absent
+  loop:
+    - /etc/my.cnf
+    - /etc/my.cnf.d/
