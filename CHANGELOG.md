@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.1.4](https://github.com/daixijun/ansible-role-mysql/compare/v1.1.3...v1.1.4) (2019-12-11)
+
+
+### Bug Fixes
+
+* 修复check模式下初始化的问题 ([9d20605](https://github.com/daixijun/ansible-role-mysql/commit/9d20605a2b349cbed949b49ea16e23cd7e6843a6))
+
 ### [1.1.3](https://github.com/daixijun/ansible-role-mysql/compare/v1.1.2...v1.1.3) (2019-12-11)
 
 
