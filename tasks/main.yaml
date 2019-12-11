@@ -127,7 +127,7 @@
   shell: /usr/local/mysql/bin/mysqld --initialize-insecure --user=mysql --basedir=/usr/local/mysql --datadir={{ mysql_datadir }}
   register: mysql_initialize_status
   when:
-    - need_to_initialize is defined
+    - not need_to_initialize is skipped
     - need_to_initialize.stdout|int == 0
   tags:
     - skip_ansible_lint
