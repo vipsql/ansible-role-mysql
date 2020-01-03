@@ -29,38 +29,42 @@
       - python-cryptography
     state: present
 
-- name: Check pacakge exists
+- name: Check mysql package is already exists
   stat:
-    path: "/usr/local/src/{{ mysql_download_url | basename }}"
-  register: _package_stat
+    path: "{{ role_path }}/files/{{ mysql_download_url | basename }}"
+  become: false
+  run_once: true
+  delegate_to: localhost
+  register: _mysql_package_stat
 
-- name: Download mysql {{ mysql_version }}
+- name: Download mysql package
   get_url:
     url: "{{ mysql_download_url }}"
-    dest: "/usr/local/src/"
+    dest: "{{ role_path }}/files/"
     checksum: "md5:{{ mysql_download_url }}.md5"
-    timeout: 300
-  register: _mysql_package
+  become: false
+  run_once: true
+  delegate_to: localhost
   when:
-    - not _package_stat.stat.exists
+    - not _mysql_package_stat.stat.exists
+  register: _mysql_package
 
 - name: Unarchive mysql binary package
   unarchive:
-    src: "{{ _mysql_package.dest }}"
+    src: "files/{{ mysql_download_url | basename }}"
     dest: /usr/local/
     creates: /usr/local/mysql
-    remote_src: true
+    remote_src: false
     owner: mysql
     group: mysql
   when:
-    - (_mysql_package is defined and _mysql_package is changed) or _package_stat.stat.exists
+    - _mysql_package_stat.stat.exists or _mysql_package is not skipped
   register: _mysql_unarchive
 
 - name: Move /usr/local/mysql-{{ mysql_version }}-el7-x86_64 => /usr/local/mysql
   shell: mv /usr/local/mysql-{{ mysql_version }}-el7-x86_64 /usr/local/mysql
   when:
-    - _mysql_unarchive is defined
-    - _mysql_unarchive is changed
+    - _mysql_unarchive is not skipped
   tags:
     - skip_ansible_lint
 
