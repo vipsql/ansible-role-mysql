@@ -53,8 +53,7 @@
     owner: mysql
     group: mysql
   when:
-    - _mysql_package is defined
-    - _mysql_package is changed
+    - (_mysql_package is defined and _mysql_package is changed) or _package_stat.stat.exists
   register: _mysql_unarchive
 
 - name: Move /usr/local/mysql-{{ mysql_version }}-el7-x86_64 => /usr/local/mysql
