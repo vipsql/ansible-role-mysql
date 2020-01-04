@@ -88,3 +88,21 @@
   when:
     - mysql_cluster_role == 'slave'
     - ms_cluster_status is not skipped
+
+# FIXME: 模块对于mysql8.0以上的版本，给用户授权`ALL`权限的时候会出现幂等性问题
+# 临时的解决方案是强制设置为 `changed_when: false`
+- name: Ensure business users (Master-Slave)
+  mysql_user:
+    name: "{{ item.name }}"
+    host: "{{ item.host | default('%') }}"
+    password: "{{ item.password }}"
+    encrypted: "{{ item.encrypted | default(omit) }}"
+    priv: "{{ item.priv | default(omit) }}"
+    login_user: root
+    login_password: "{{ mysql_root_password }}"
+    login_unix_socket: "{{ mysql_socket }}"
+    state: "{{ item.state | default(omit) }}"
+  no_log: yes
+  loop: "{{ mysql_users }}"
+  when:
+    - mysql_users|length > 0

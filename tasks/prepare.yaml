@@ -6,3 +6,8 @@
   loop:
     - /etc/my.cnf
     - /etc/my.cnf.d/
+
+- name: Verify that mysql is installed
+  stat:
+    path: /usr/local/mysql/bin/mysqld
+  register: _mysql_stat

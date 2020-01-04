@@ -47,6 +47,7 @@
   delegate_to: localhost
   when:
     - not _mysql_package_stat.stat.exists
+    - not _mysql_stat.stat.exists
   register: _mysql_package
 
 - name: Unarchive mysql binary package
@@ -58,6 +59,7 @@
     owner: mysql
     group: mysql
   when:
+    - not _mysql_stat.stat.exists
     - _mysql_package_stat.stat.exists or _mysql_package is not skipped
   register: _mysql_unarchive
 
@@ -97,14 +99,15 @@
     group: root
     mode: 0400
 
-# - name: Add ansible_play_hosts to /etc/hosts
-#   blockinfile:
-#     path: /etc/hosts
-#     block: |
-#       {% for host in ansible_play_hosts %}
-#       {{ hostvars[host]['ansible_default_ipv4']['address'] }} {{ hostvars[host]['ansible_fqdn'] }}
-#       {% endfor %}
-#
+- name: Add ansible_play_hosts to /etc/hosts
+  blockinfile:
+    path: /etc/hosts
+    block: |
+      {% for host in ansible_play_hosts %}
+      {{ hostvars[host]['ansible_default_ipv4']['address'] }} {{ hostvars[host]['ansible_fqdn'] }}
+      {% endfor %}
+  when: ansible_virtualization_type != "docker"
+
 - name: Generate logrotate for logs
   template:
     src: mysql-log-rotate.j2
@@ -179,26 +182,5 @@
   run_once: true
   loop: "{{ mysql_databases }}"
   when:
-    - ansible_play_hosts.index(inventory_hostname) == 0
     - mysql_databases|length > 0
-
-# FIXME: 模块对于mysql8.0以上的版本，给用户授权`ALL`权限的时候会出现幂等性问题
-# 临时的解决方案是强制设置为 `changed_when: false`
-- name: Ensure business users
-  mysql_user:
-    name: "{{ item.name }}"
-    host: "{{ item.host | default('%') }}"
-    password: "{{ item.password }}"
-    encrypted: "{{ item.encrypted | default(omit) }}"
-    priv: "{{ item.priv | default(omit) }}"
-    login_user: root
-    login_password: "{{ mysql_root_password }}"
-    login_unix_socket: "{{ mysql_socket }}"
-    state: "{{ item.state | default(omit) }}"
-  run_once: true
-  # changed_when: false
-  no_log: yes
-  loop: "{{ mysql_users }}"
-  when:
-    - ansible_play_hosts.index(inventory_hostname) == 0
-    - mysql_users|length > 0
+    - (mysql_cluster_type == 'mgr' and ansible_play_hosts.index(inventory_hostname) == 0) or (mysql_cluster_type == 'msg' and mysql_cluster_role == 'master')
