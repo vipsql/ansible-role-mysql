@@ -102,6 +102,7 @@
     login_password: "{{ mysql_root_password }}"
     login_unix_socket: "{{ mysql_socket }}"
     state: "{{ item.state | default(omit) }}"
+    sql_log_bin: false
   no_log: yes
   loop: "{{ mysql_users }}"
   when:

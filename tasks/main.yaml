@@ -183,4 +183,4 @@
   loop: "{{ mysql_databases }}"
   when:
     - mysql_databases|length > 0
-    - (mysql_cluster_type == 'mgr' and ansible_play_hosts.index(inventory_hostname) == 0) or (mysql_cluster_type == 'msg' and mysql_cluster_role == 'master')
+    - (mysql_cluster_type == 'mgr' and ansible_play_hosts.index(inventory_hostname) == 0) or (mysql_cluster_type == 'ms' and mysql_cluster_role == 'master')
