@@ -3,8 +3,11 @@ dependency:
   name: galaxy
 driver:
   name: docker
-lint:
-  name: yamllint
+lint: |
+  set -e
+  yamllint .
+  ansible-lint .
+  flake8 --max-line-length=159 --ignore=E402
 platforms:
   - name: mgr1
     image: geerlingguy/docker-centos7-ansible:latest
@@ -13,15 +16,6 @@ platforms:
       - /sys/fs/cgroup:/sys/fs/cgroup:ro
     privileged: true
     pre_build_image: true
-    # purge_networks: false
-    # network_mode: bridge
-    # networks:
-    #   - name: bridge
-    #     ipv4_address: 172.17.0.3
-    etc_hosts:
-      mgr1: 172.17.0.2
-      mgr2: 172.17.0.3
-      mgr3: 172.17.0.4
   - name: mgr2
     image: geerlingguy/docker-centos7-ansible:latest
     command: ""
@@ -30,14 +24,6 @@ platforms:
     privileged: true
     pre_build_image: true
     purge_networks: false
-    # network_mode: bridge
-    # networks:
-    #   - name: bridge
-    #     ipv4_address: 172.17.0.4
-    etc_hosts:
-      mgr1: 172.17.0.2
-      mgr2: 172.17.0.3
-      mgr3: 172.17.0.4
   - name: mgr3
     image: geerlingguy/docker-centos7-ansible:latest
     command: ""
@@ -46,23 +32,12 @@ platforms:
     privileged: true
     pre_build_image: true
     purge_networks: false
-    # network_mode: bridge
-    # networks:
-    #   - name: bridge
-    #     ipv4_address: 172.17.0.5
-    etc_hosts:
-      mgr1: 172.17.0.2
-      mgr2: 172.17.0.3
-      mgr3: 172.17.0.4
 provisioner:
   name: ansible
-  lint:
-    name: ansible-lint
+  config_options:
+    defaults:
+      verbosity: 1
   playbooks:
     converge: ${MOLECULE_PLAYBOOK:-playbook.yml}
 verifier:
   name: testinfra
-  lint:
-    name: flake8
-    options:
-      max-line-length: 159

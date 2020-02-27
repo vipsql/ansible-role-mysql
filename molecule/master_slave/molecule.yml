@@ -3,8 +3,11 @@ dependency:
   name: galaxy
 driver:
   name: docker
-lint:
-  name: yamllint
+lint: |
+  set -e
+  yamllint .
+  ansible-lint .
+  flake8 --max-line-length=159 --ignore=E402
 platforms:
   - name: master
     image: geerlingguy/docker-centos7-ansible:latest
@@ -22,11 +25,8 @@ platforms:
     pre_build_image: true
 provisioner:
   name: ansible
-  lint:
-    name: ansible-lint
+  config_options:
+    defaults:
+      verbosity: 1
 verifier:
   name: testinfra
-  lint:
-    name: flake8
-    options:
-      max-line-length: 159
