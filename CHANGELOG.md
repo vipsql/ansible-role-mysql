@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.4.0](https://github.com/daixijun/ansible-role-mysql/compare/v1.3.1...v1.4.0) (2020-02-27)
+
+
+### Features
+
+* 添加 mysql_interface 变量用于在多网卡环境中指定集群间通信IP ([92a43ef](https://github.com/daixijun/ansible-role-mysql/commit/92a43ef202c3f2ea95ce81092a49542b79bb09bb))
+* 添加 mysql_query 模块用于代替部分命令行执行sql的任务 ([275fc34](https://github.com/daixijun/ansible-role-mysql/commit/275fc3499f04f4e772cb04e7730c9eceb6f3a14e))
+
+
+### Bug Fixes
+
+* **master_slave:** 隐藏部分日志信息 ([8da5365](https://github.com/daixijun/ansible-role-mysql/commit/8da53657c66a7bc0c21ad60ea6f03024f0074a20))
+* **mgr:** 隐藏部分日志 ([2bafabe](https://github.com/daixijun/ansible-role-mysql/commit/2bafabeac99331d856e0ef1267519012df15ee0a))
+
 ### [1.3.1](https://github.com/daixijun/ansible-role-mysql/compare/v1.3.0...v1.3.1) (2020-01-05)
 
 
