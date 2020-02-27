@@ -40,7 +40,7 @@
 - name: Change the master in slave to start the replication
   mysql_replication:
     mode: changemaster
-    master_host: '{{ hostvars[mysql_replication_master]["ansible_"mysql_interface]["ipv4"]["address"] if mysql_interface else hostvars[mysql_replication_master]["ansible_default_ipv4"]["address"] }}'
+    master_host: "{{ hostvars[mysql_replication_master]['ansible_'+mysql_interface].ipv4.address if mysql_interface else hostvars[mysql_replication_master].ansible_default_ipv4.address }}"
     master_user: "{{ mysql_repl_user | default('repl') }}"
     master_password: "{{ mysql_repl_password }}"
     master_log_file: "{{ repl_stat.File }}"
@@ -61,7 +61,7 @@
     mode: startslave
     login_user: root
     login_password: "{{ mysql_root_password }}"
-    login_host: 127.0.0.1
+    login_unix_socket: "{{ mysql_socket }}"
   when:
     - slave.Is_Slave is defined
     - not slave.Is_Slave
@@ -75,19 +75,30 @@
     login_password: "{{ mysql_root_password }}"
     login_unix_socket: "{{ mysql_socket }}"
   register: ms_cluster_status
-  changed_when: false
+  # changed_when: false
+  no_log: yes
   when:
     - mysql_cluster_role == 'slave'
   tags:
     - skip_ansible_lint
 
-- name: Show Master-Slave Cluster status
-  debug:
-    var: ms_cluster_status
-    verbosity: 2
+- name: Assert that the slave is in the expected state
+  assert:
+    that:
+      - ms_cluster_status.Is_Slave|bool
+      - ms_cluster_status.Slave_SQL_Running == "Yes"
+      - ms_cluster_status.Slave_IO_Running == "Yes"
   when:
     - mysql_cluster_role == 'slave'
     - ms_cluster_status is not skipped
+
+# - name: Show Master-Slave Cluster status
+#   debug:
+#     var: ms_cluster_status
+#     verbosity: 1
+#   when:
+#     - mysql_cluster_role == 'slave'
+#     - ms_cluster_status is not skipped
 
 # FIXME: 模块对于mysql8.0以上的版本，给用户授权`ALL`权限的时候会出现幂等性问题
 # 临时的解决方案是强制设置为 `changed_when: false`

@@ -19,7 +19,10 @@
 
 - name: Installing dependencies
   yum:
-    name:
+    name: "{{ dependencies | join(',') }}"
+    state: present
+  vars:
+    dependencies:
       - tzdata
       - openssl
       - openssl-devel
@@ -27,7 +30,7 @@
       - numactl-libs
       - python-PyMySQL
       - python-cryptography
-    state: present
+  no_log: yes
 
 - name: Check mysql package is already exists
   stat:
@@ -91,13 +94,13 @@
     group: mysql
     validate: /usr/local/mysql/bin/mysqld --defaults-file=%s --validate-config
 
-- name: Generate /root/.my.cnf for mysqladmin
-  template:
-    src: mysqladmin.my.cnf.j2
-    dest: /root/.my.cnf
-    owner: root
-    group: root
-    mode: 0400
+# - name: Generate /root/.my.cnf for mysqladmin
+#   template:
+#     src: mysqladmin.my.cnf.j2
+#     dest: /root/.my.cnf
+#     owner: root
+#     group: root
+#     mode: 0400
 
 - name: Add ansible_play_hosts to /etc/hosts
   blockinfile:
@@ -143,6 +146,7 @@
     daemon_reload: yes
     name: mysqld
     state: started
+  no_log: yes
 
 - name: Change root password
   mysql_user:
