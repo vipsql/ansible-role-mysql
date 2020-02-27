@@ -104,7 +104,7 @@
     path: /etc/hosts
     block: |
       {% for host in ansible_play_hosts %}
-      {{ hostvars[host]['ansible_default_ipv4']['address'] }} {{ hostvars[host]['ansible_fqdn'] }}
+      {{ hostvars[host]['ansible_'+mysql_interface]['ipv4']['address'] if mysql_interface else hostvars[host]['ansible_default_ipv4']['address'] }} {{ hostvars[host]['ansible_fqdn'] }}
       {% endfor %}
   when: ansible_virtualization_type != "docker"
 
@@ -156,7 +156,7 @@
 
 - name: Removes all anonymous user accounts
   mysql_user:
-    user: ""
+    name: ""
     host_all: yes
     login_user: root
     login_password: "{{ mysql_root_password }}"

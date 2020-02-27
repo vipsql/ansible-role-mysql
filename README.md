@@ -25,6 +25,7 @@ daixijun.mysql
 * **mysql_logdir**: 日志存放目录(默认 /var/log/mysqld)
 * **mysql_pidfile**: PID文件位置(默认 /var/run/mysqld/mysqld.pid)
 * **mysql_socket**: Socket文件位置(默认 /var/run/mysqld/mysqld.sock)
+* **mysql_interface**: 指定网卡，默认使用除lo外的第一张网卡
 * **mysql_root_password**: root账号的密码
 * **mysql_cluster_type**: 集群类型(默认 mgr) 可选 `mgr`(Mysql Group Replication)/`ms`(Master-Slave)
 * **mysql_cluster_role**: Master-Slave 模式下的实例角色，可选: `master` / `slave`

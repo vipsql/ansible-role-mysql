@@ -40,7 +40,7 @@
 - name: Change the master in slave to start the replication
   mysql_replication:
     mode: changemaster
-    master_host: '{{ hostvars[mysql_replication_master]["ansible_default_ipv4"]["address"] }}'
+    master_host: '{{ hostvars[mysql_replication_master]["ansible_"mysql_interface]["ipv4"]["address"] if mysql_interface else hostvars[mysql_replication_master]["ansible_default_ipv4"]["address"] }}'
     master_user: "{{ mysql_repl_user | default('repl') }}"
     master_password: "{{ mysql_repl_password }}"
     master_log_file: "{{ repl_stat.File }}"
