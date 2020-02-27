@@ -40,4 +40,5 @@ provisioner:
   playbooks:
     converge: ${MOLECULE_PLAYBOOK:-playbook.yml}
 verifier:
-  name: testinfra
+  # name: testinfra
+  name: ansible

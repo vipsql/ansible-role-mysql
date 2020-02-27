@@ -1,0 +1,38 @@
+---
+- name: Verify
+  hosts: all
+  become: true
+  gather_facts: false
+  any_errors_fatal: yes
+  tasks:
+    - name: Gather the rpm package facts
+      package_facts:
+        manager: rpm
+
+    - name: Assert that the python2-PyMySQL package is installed
+      assert:
+        that:
+          - "'python2-PyMySQL' in ansible_facts.packages"
+
+    - name: Gather service facts
+      service_facts:
+
+    - name: Assert that the service is in the expected state
+      assert:
+        that:
+          - ansible_facts.services["mysqld.service"].state == "running"
+
+    - name: Stat socket file
+      stat:
+        path: /var/run/mysqld/mysqld.sock
+        get_checksum: no
+      register: socket_stat
+
+    - name: Assert that the socket file is in the expected state
+      assert:
+        that:
+          - socket_stat.stat.exists
+          - socket_stat.stat.issock
+          - socket_stat.stat.mode == "0777"
+          - socket_stat.stat.pw_name == "mysql"
+          - socket_stat.stat.gr_name == "mysql"
