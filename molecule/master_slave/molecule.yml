@@ -29,4 +29,4 @@ provisioner:
     defaults:
       verbosity: 1
 verifier:
-  name: testinfra
+  name: ansible
