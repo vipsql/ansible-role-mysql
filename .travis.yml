@@ -22,7 +22,7 @@ before_script:
   - cd daixijun.mysql
 
 install:
-  - pip install "molecule[lint]"
+  - pip install "molecule[lint,docker]"
 
 script:
   - MOLECULE_PLAYBOOK=${MOLECULE_PLAYBOOK} molecule test --scenario-name=${SCENARIO_NAME}
