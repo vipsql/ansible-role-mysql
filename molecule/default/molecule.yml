@@ -38,7 +38,7 @@ provisioner:
     defaults:
       verbosity: 1
   playbooks:
-    converge: ${MOLECULE_PLAYBOOK:-playbook.yml}
+    converge: ${MOLECULE_PLAYBOOK:-converge.yml}
 verifier:
   # name: testinfra
   name: ansible
