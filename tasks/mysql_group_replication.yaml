@@ -25,6 +25,7 @@
     login_unix_socket: "{{ mysql_socket }}"
     query: "SELECT * FROM performance_schema.replication_group_members where member_role='PRIMARY';"
   run_once: true
+  no_log: yes
   register: mysql_mgr_primary_status
   when: ansible_play_hosts.index(inventory_hostname) == 0
   tags:
@@ -53,6 +54,7 @@
     login_unix_socket: "{{ mysql_socket }}"
     query: SELECT * FROM performance_schema.replication_group_members where member_host='{{ hostvars[inventory_hostname]["ansible_"+mysql_interface].ipv4.address if mysql_interface else ansible_default_ipv4.address }}'
   register: mysql_mgr_member_status
+  no_log: yes
   when:
     - ansible_play_hosts.index(inventory_hostname) != 0
   tags:
@@ -70,19 +72,19 @@
   tags:
     - skip_ansible_lint
 
-- name: Query MGR Cluster status
-  # shell: /usr/local/mysql/bin/mysql -uroot -p'{{ mysql_root_password }}' --socket={{ mysql_socket }} -ne "SELECT * FROM performance_schema.replication_group_members;"
-  mysql_query:
-    login_user: root
-    login_password: "{{ mysql_root_password }}"
-    login_unix_socket: "{{ mysql_socket }}"
-    query: "SELECT * FROM performance_schema.replication_group_members;"
-  run_once: true
-  # register: mgr_cluster_status
-  when:
-    - ansible_play_hosts.index(inventory_hostname) == 0
-  tags:
-    - skip_ansible_lint
+# - name: Query MGR Cluster status
+#   # shell: /usr/local/mysql/bin/mysql -uroot -p'{{ mysql_root_password }}' --socket={{ mysql_socket }} -ne "SELECT * FROM performance_schema.replication_group_members;"
+#   mysql_query:
+#     login_user: root
+#     login_password: "{{ mysql_root_password }}"
+#     login_unix_socket: "{{ mysql_socket }}"
+#     query: "SELECT * FROM performance_schema.replication_group_members;"
+#   run_once: true
+#   # register: mgr_cluster_status
+#   when:
+#     - ansible_play_hosts.index(inventory_hostname) == 0
+#   tags:
+#     - skip_ansible_lint
 
 # - name: Show MGR Cluster status
 #   debug:

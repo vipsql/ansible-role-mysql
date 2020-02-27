@@ -8,6 +8,7 @@
     - name: Gather the rpm package facts
       package_facts:
         manager: rpm
+      no_log: yes
 
     - name: Assert that the python2-PyMySQL package is installed
       assert:
@@ -16,6 +17,7 @@
 
     - name: Gather service facts
       service_facts:
+      no_log: yes
 
     - name: Assert that the service is in the expected state
       assert:
@@ -27,6 +29,7 @@
         path: /var/run/mysqld/mysqld.sock
         get_checksum: no
       register: socket_stat
+      no_log: yes
 
     - name: Assert that the socket file is in the expected state
       assert:
