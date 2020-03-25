@@ -9,6 +9,10 @@ mysql_root_password: 4cpUc7yyfoTp>o3VCiLq
 mysql_interface: "" # 指定网卡，默认使用除lo外的第一张
 mysql_sql_mode: "ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION"
 
+# TLS Support
+mysql_ssl_enable: false
+mysql_ssl_directory: /usr/local/mysql/etc/ssl
+
 # 集群类型:
 ## mgr (Mysql Group Replication): 组复制
 ## ms (Master-Slave): 主从复制

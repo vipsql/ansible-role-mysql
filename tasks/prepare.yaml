@@ -11,3 +11,32 @@
   stat:
     path: /usr/local/mysql/bin/mysqld
   register: _mysql_stat
+
+- name: Install PyOpenSSL
+  pip:
+    name: pyOpenSSL
+    extra_args: -i https://mirrors.aliyun.com/pypi/simple -q
+    state: present
+  when:
+    - mysql_ssl_enable|bool
+
+- name: Check certificate
+  openssl_certificate_info:
+    path: '{{ mysql_ssl_directory | regex_replace("/$") }}/ca.crt'
+    valid_at:
+      point_1: "+30d"
+  no_log: true
+  register: _cert_status
+  ignore_errors: yes
+  when:
+    - mysql_ssl_enable|bool
+
+- name: Validation certificate validity
+  assert:
+    that:
+      - not _cert_status.expired
+      - _cert_status.valid_at.point_1
+    fail_msg: The certificate has expired or is less than 30 days old
+  when:
+    - _cert_status is succeeded
+    - "'valid_at' in _cert_status"

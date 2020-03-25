@@ -10,6 +10,7 @@
     priv: "*.*:REPLICATION SLAVE"
     sql_log_bin: false
     state: present
+  no_log: true
   when:
     - mysql_cluster_role == 'master'
 
@@ -109,6 +110,7 @@
     password: "{{ item.password }}"
     encrypted: "{{ item.encrypted | default(omit) }}"
     priv: "{{ item.priv | default(omit) }}"
+    require_ssl: "{{ item.require_ssl | default(omit) }}"
     login_user: root
     login_password: "{{ mysql_root_password }}"
     login_unix_socket: "{{ mysql_socket }}"

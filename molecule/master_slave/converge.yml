@@ -5,6 +5,7 @@
   roles:
     - role: daixijun.mysql
       mysql_cluster_type: ms
+      mysql_ssl_enable: true
       mysql_download_url: https://cdn.mysql.com/Downloads/MySQL-8.0/mysql-{{ mysql_version }}-el7-x86_64.tar.gz
       mysql_databases:
         - name: db1
@@ -12,7 +13,9 @@
         - name: monitor
           password: monitor
           priv: "sys.*:SELECT"
+          require_ssl: true
         - name: proxysql
           password: proxysql
+          require_ssl: true
           priv: "*.*:INSERT,UPDATE,DELETE,SELECT,CREATE,DROP,ALTER"
           # state: absent

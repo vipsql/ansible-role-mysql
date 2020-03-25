@@ -30,7 +30,6 @@
       - numactl-libs
       - python-PyMySQL
       - python-cryptography
-  no_log: yes
 
 - name: Check mysql package is already exists
   stat:
@@ -77,14 +76,39 @@
   file:
     path: "{{ item }}"
     state: directory
+    recurse: true
     owner: mysql
     group: mysql
   loop:
-    - /usr/local/mysql/etc/
+    - /usr/local/mysql/etc
     - "{{ mysql_datadir }}"
     - "{{ mysql_logdir }}"
+    - "{{ mysql_ssl_directory }}"
     - "{{ mysql_pidfile | dirname }}"
     - "{{ mysql_socket | dirname }}"
+
+- name: Generate ssl certificate
+  import_tasks: tls.yaml
+  run_once: true
+  delegate_to: localhost
+  when: _cert_status is failed
+  notify:
+    - restart mysqld
+
+- name: Synchronize certificate files to other machines
+  copy:
+    src: files/ssl/{{ item }}
+    dest: '{{ mysql_ssl_directory | regex_replace("/$") }}/{{ item }}'
+    # remote_src: true
+    owner: mysql
+    group: mysql
+  loop:
+    - ca.crt
+    - server.crt
+    - server.key
+  when:
+    - mysql_ssl_enable|bool
+    - _cert_status is failed
 
 - name: Generate my.cnf
   template:
@@ -93,14 +117,8 @@
     owner: mysql
     group: mysql
     validate: /usr/local/mysql/bin/mysqld --defaults-file=%s --validate-config
-
-# - name: Generate /root/.my.cnf for mysqladmin
-#   template:
-#     src: mysqladmin.my.cnf.j2
-#     dest: /root/.my.cnf
-#     owner: root
-#     group: root
-#     mode: 0400
+  notify:
+    - restart mysqld
 
 - name: Add ansible_play_hosts to /etc/hosts
   blockinfile:
@@ -156,6 +174,7 @@
     login_user: root
     login_unix_socket: "{{ mysql_socket }}"
     sql_log_bin: false
+  no_log: true
   when: mysql_initialize_status is not skipped
 
 - name: Removes all anonymous user accounts
@@ -167,6 +186,7 @@
     login_unix_socket: "{{ mysql_socket }}"
     sql_log_bin: false
     state: absent
+  no_log: true
 
 - name: Include MGR tasks
   include_tasks: mysql_group_replication.yaml

@@ -1,5 +1,4 @@
 # {{ ansible_managed }}
-
 [mysqld]
 # Connection and Thread variables
 port                            = 3306
@@ -25,7 +24,15 @@ wait_timeout                    = 600
 thread_cache_size               = 505
 transaction_isolation           = READ-COMMITTED
 lower_case_table_names          = 1
-sql_mode                        = {{ mysql_sql_mode }}
+sql_mode                        = {{ mysql_sql_mode | quote }}
+
+{% if mysql_ssl_enable %}
+# TLS Support
+ssl
+ssl-ca                          = {{ mysql_ssl_directory | regex_replace("/$") }}/ca.crt
+ssl-cert                        = {{ mysql_ssl_directory | regex_replace("/$") }}/server.crt
+ssl-key                         = {{ mysql_ssl_directory | regex_replace("/$") }}/server.key
+{% endif %}
 
 # Session variables
 sort_buffer_size                             = 2M
@@ -36,7 +43,7 @@ table_definition_cache                       = 1400
 table_open_cache                             = 2000
 table_open_cache_instances                   = 16
 
-skip_name_resolve               = 0
+skip_name_resolve               = ON
 
 # 时区
 default_time_zone               = "+8:00"
@@ -83,7 +90,7 @@ slow_query_log                  = 1
 long_query_time                 = 10
 log_queries_not_using_indexes   = 1
 slow_query_log_file             = {{ mysql_logdir | regex_replace("/$") }}/mysqld.slow.log
-min_examined_row_limit                       = 100
+min_examined_row_limit          = 100
 general_log                     = 0
 general_log_file                = {{ mysql_logdir | regex_replace("/$") }}/mysqld.log
 
