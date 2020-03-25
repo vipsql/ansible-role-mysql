@@ -4,15 +4,18 @@
   any_errors_fatal: yes
   roles:
     - role: daixijun.mysql
+      mysql_remote_src: no
       mysql_group_replication_single_primary_mode: false
-      mysql_download_url: https://cdn.mysql.com/Downloads/MySQL-8.0/mysql-{{ mysql_version }}-el7-x86_64.tar.gz
-      mysql_databases:
-        - name: db1
+      # mysql_databases:
+      #   - name: t1
+      #     state: absent
+      mysql_ssl_enable: true
       mysql_users:
         - name: monitor
           password: monitor
           priv: "sys.*:SELECT"
         - name: proxysql
           password: proxysql
+          require_ssl: true
           priv: "*.*:INSERT,UPDATE,DELETE,SELECT,CREATE,DROP,ALTER"
           # state: absent
