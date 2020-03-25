@@ -10,22 +10,36 @@
     priv: "*.*:REPLICATION SLAVE"
     sql_log_bin: false
     state: present
+  no_log: true
 
-- name: Change master
-  shell: /usr/local/mysql/bin/mysql -uroot -p'{{ mysql_root_password }}' --socket={{ mysql_socket }} -ne "CHANGE MASTER TO MASTER_USER='repl', MASTER_PASSWORD='{{ mysql_repl_password }}' FOR CHANNEL 'group_replication_recovery';"
-  no_log: yes
-  changed_when: false
-  tags:
-    - skip_ansible_lint
+- name: Verify that cluster status
+  mysql_query:
+    login_user: root
+    login_password: "{{ mysql_root_password }}"
+    login_unix_socket: "{{ mysql_socket }}"
+    query: SELECT member_state FROM performance_schema.replication_group_members WHERE member_id=@@server_uuid
+  register: _cluster_status
+
+- name: Change master for channel
+  mysql_replication:
+    mode: changemaster
+    login_user: root
+    login_password: "{{ mysql_root_password }}"
+    login_unix_socket: "{{ mysql_socket }}"
+    master_user: repl
+    master_password: "{{ mysql_repl_password }}"
+    channel: group_replication_recovery
+  when:
+    - _cluster_status.rowcount[0]|int == 0
 
 - name: Verify that the primary node status
   mysql_query:
     login_user: root
     login_password: "{{ mysql_root_password }}"
     login_unix_socket: "{{ mysql_socket }}"
-    query: "SELECT * FROM performance_schema.replication_group_members where member_role='PRIMARY';"
+    query: SELECT * FROM performance_schema.replication_group_members where member_role='PRIMARY'
   run_once: true
-  no_log: yes
+  # no_log: yes
   register: mysql_mgr_primary_status
   when: ansible_play_hosts.index(inventory_hostname) == 0
   tags:
@@ -52,9 +66,9 @@
     login_user: root
     login_password: "{{ mysql_root_password }}"
     login_unix_socket: "{{ mysql_socket }}"
-    query: SELECT * FROM performance_schema.replication_group_members where member_host='{{ hostvars[inventory_hostname]["ansible_"+mysql_interface].ipv4.address if mysql_interface else ansible_default_ipv4.address }}'
+    query: SELECT member_state FROM performance_schema.replication_group_members where member_id=@@server_uuid
   register: mysql_mgr_member_status
-  no_log: yes
+  # no_log: yes
   when:
     - ansible_play_hosts.index(inventory_hostname) != 0
   tags:
@@ -68,31 +82,9 @@
     query: "START GROUP_REPLICATION;"
   when:
     - ansible_play_hosts.index(inventory_hostname) != 0
-    - mysql_mgr_member_status.rowcount[0]|int == 0
+    - mysql_mgr_member_status.rowcount[0]|int == 0 or mysql_mgr_member_status.query_result[0][0].member_state != 'ONLINE'
   tags:
     - skip_ansible_lint
-
-# - name: Query MGR Cluster status
-#   # shell: /usr/local/mysql/bin/mysql -uroot -p'{{ mysql_root_password }}' --socket={{ mysql_socket }} -ne "SELECT * FROM performance_schema.replication_group_members;"
-#   mysql_query:
-#     login_user: root
-#     login_password: "{{ mysql_root_password }}"
-#     login_unix_socket: "{{ mysql_socket }}"
-#     query: "SELECT * FROM performance_schema.replication_group_members;"
-#   run_once: true
-#   # register: mgr_cluster_status
-#   when:
-#     - ansible_play_hosts.index(inventory_hostname) == 0
-#   tags:
-#     - skip_ansible_lint
-
-# - name: Show MGR Cluster status
-#   debug:
-#     msg: "{{ mgr_cluster_status.query_result[0] }}"
-#   run_once: true
-#   when:
-#     - ansible_play_hosts.index(inventory_hostname) == 0
-#     - mgr_cluster_status is not skipped
 
 - name: Copy gr_member_routing_candidate_status.sql
   copy:

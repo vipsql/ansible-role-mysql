@@ -120,14 +120,14 @@
   notify:
     - restart mysqld
 
-- name: Add ansible_play_hosts to /etc/hosts
-  blockinfile:
-    path: /etc/hosts
-    block: |
-      {% for host in ansible_play_hosts %}
-      {{ hostvars[host]['ansible_'+mysql_interface]['ipv4']['address'] if mysql_interface else hostvars[host]['ansible_default_ipv4']['address'] }} {{ hostvars[host]['ansible_fqdn'] }}
-      {% endfor %}
-  when: ansible_virtualization_type != "docker"
+# - name: Add ansible_play_hosts to /etc/hosts
+#   blockinfile:
+#     path: /etc/hosts
+#     block: |
+#       {% for host in ansible_play_hosts %}
+#       {{ hostvars[host]['ansible_'+mysql_interface]['ipv4']['address'] if mysql_interface else hostvars[host]['ansible_default_ipv4']['address'] }} {{ hostvars[host]['ansible_fqdn'] }}
+#       {% endfor %}
+#   when: ansible_virtualization_type != "docker"
 
 - name: Generate logrotate for logs
   template:
@@ -159,14 +159,11 @@
   tags:
     - skip_ansible_lint
 
-- name: Ensure mysql service started
-  systemd:
-    daemon_reload: yes
-    name: mysqld
-    state: started
+- name: Run handlers to restart MySQL
+  meta: flush_handlers
   no_log: yes
 
-- name: Change root password
+- name: Update root password
   mysql_user:
     name: root
     host_all: true
