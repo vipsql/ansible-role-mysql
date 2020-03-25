@@ -28,8 +28,9 @@ mysql_audit_log: false
 mysql_repl_user: repl
 mysql_repl_password: jMrxC9VdVUs<hwbyXinA
 # MGR
-mysql_group_replication_name: cbd76b31-d846-11e9-a464-0242ac110004
+mysql_group_replication_name: cbd76b31-d846-11e9-a464-0242ac110004 # 通过 uuidgen 生成
 mysql_group_replication_single_primary_mode: true
+mysql_group_replication_ssl: false # `mysql_ssl_enable` 为 true 时有效，将与实例使用相同的证书
 
 mysql_databases: []
 # - name: db1

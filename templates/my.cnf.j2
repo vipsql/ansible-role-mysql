@@ -155,6 +155,9 @@ loose-group_replication_auto_increment_increment            = 7  # 默认为7
 loose-group_replication_single_primary_mode                 = OFF # 单主模式,默认为 ON
 loose-group_replication_enforce_update_everywhere_checks    = ON
 {% endif %}
+{% if mysql_ssl_enable and mysql_group_replication_ssl %}
+loose-group_replication_ssl_mode                            = REQUIRED
+{% endif %}
 {% endif %}
 
 report_host                             = {{ hostvars[inventory_hostname]['ansible_'+mysql_interface].ipv4.address if mysql_interface else ansible_default_ipv4.address }}
