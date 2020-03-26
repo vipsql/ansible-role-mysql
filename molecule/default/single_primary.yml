@@ -14,5 +14,6 @@
           priv: "sys.*:SELECT"
         - name: proxysql
           password: proxysql
+          require_ssl: true
           priv: "*.*:INSERT,UPDATE,DELETE,SELECT,CREATE,DROP,ALTER"
           # state: absent

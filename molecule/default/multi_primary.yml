@@ -9,7 +9,6 @@
       # mysql_databases:
       #   - name: t1
       #     state: absent
-      mysql_ssl_enable: true
       mysql_users:
         - name: monitor
           password: monitor

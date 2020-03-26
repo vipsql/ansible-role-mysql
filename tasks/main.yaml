@@ -30,6 +30,7 @@
       - numactl-libs
       - python-PyMySQL
       - python-cryptography
+  no_log: true
 
 - name: Check mysql package is already exists
   stat:
@@ -83,32 +84,8 @@
     - /usr/local/mysql/etc
     - "{{ mysql_datadir }}"
     - "{{ mysql_logdir }}"
-    - "{{ mysql_ssl_directory }}"
     - "{{ mysql_pidfile | dirname }}"
     - "{{ mysql_socket | dirname }}"
-
-- name: Generate ssl certificate
-  import_tasks: tls.yaml
-  run_once: true
-  delegate_to: localhost
-  when: _cert_status is failed
-  notify:
-    - restart mysqld
-
-- name: Synchronize certificate files to other machines
-  copy:
-    src: files/ssl/{{ item }}
-    dest: '{{ mysql_ssl_directory | regex_replace("/$") }}/{{ item }}'
-    # remote_src: true
-    owner: mysql
-    group: mysql
-  loop:
-    - ca.crt
-    - server.crt
-    - server.key
-  when:
-    - mysql_ssl_enable|bool
-    - _cert_status is failed
 
 - name: Generate my.cnf
   template:
@@ -119,15 +96,6 @@
     validate: /usr/local/mysql/bin/mysqld --defaults-file=%s --validate-config
   notify:
     - restart mysqld
-
-# - name: Add ansible_play_hosts to /etc/hosts
-#   blockinfile:
-#     path: /etc/hosts
-#     block: |
-#       {% for host in ansible_play_hosts %}
-#       {{ hostvars[host]['ansible_'+mysql_interface]['ipv4']['address'] if mysql_interface else hostvars[host]['ansible_default_ipv4']['address'] }} {{ hostvars[host]['ansible_fqdn'] }}
-#       {% endfor %}
-#   when: ansible_virtualization_type != "docker"
 
 - name: Generate logrotate for logs
   template:

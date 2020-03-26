@@ -25,14 +25,7 @@ thread_cache_size               = 505
 transaction_isolation           = READ-COMMITTED
 lower_case_table_names          = 1
 sql_mode                        = {{ mysql_sql_mode | quote }}
-
-{% if mysql_ssl_enable %}
-# TLS Support
 ssl
-ssl-ca                          = {{ mysql_ssl_directory | regex_replace("/$") }}/ca.crt
-ssl-cert                        = {{ mysql_ssl_directory | regex_replace("/$") }}/server.crt
-ssl-key                         = {{ mysql_ssl_directory | regex_replace("/$") }}/server.key
-{% endif %}
 
 # Session variables
 sort_buffer_size                             = 2M
@@ -154,9 +147,6 @@ loose-group_replication_enforce_update_everywhere_checks    = OFF
 loose-group_replication_auto_increment_increment            = 7  # 默认为7
 loose-group_replication_single_primary_mode                 = OFF # 单主模式,默认为 ON
 loose-group_replication_enforce_update_everywhere_checks    = ON
-{% endif %}
-{% if mysql_ssl_enable and mysql_group_replication_ssl %}
-loose-group_replication_ssl_mode                            = REQUIRED
 {% endif %}
 {% endif %}
 
