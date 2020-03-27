@@ -87,6 +87,11 @@
     - "{{ mysql_pidfile | dirname }}"
     - "{{ mysql_socket | dirname }}"
 
+- name: Setting PATH environment variable
+  copy:
+    content: "export PATH=/usr/local/mysql/bin:$PATH"
+    dest: /etc/profile.d/mysql.sh
+
 - name: Generate my.cnf
   template:
     src: my.cnf.j2
