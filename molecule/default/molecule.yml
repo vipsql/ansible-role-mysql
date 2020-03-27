@@ -7,7 +7,6 @@ lint: |
   set -e
   yamllint .
   ansible-lint .
-  flake8 --max-line-length=159 --ignore=E402
 platforms:
   - name: mgr1
     image: geerlingguy/docker-centos7-ansible:latest
