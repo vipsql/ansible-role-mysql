@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.5.0](https://github.com/daixijun/ansible-role-mysql/compare/v1.4.0...v1.5.0) (2020-03-27)
+
+
+### Features
+
+* 添加mysql相关命令到系统PATH环境变量 ([7c1edb9](https://github.com/daixijun/ansible-role-mysql/commit/7c1edb952e54fa50017159dca9b64cd29a57ed5d))
+* **mgr:** mgr 添加ssl 支持 ([ba5fffc](https://github.com/daixijun/ansible-role-mysql/commit/ba5fffc480a6cafc90b3efff743b017b2be04150))
+* add ssl support ([6fb8c78](https://github.com/daixijun/ansible-role-mysql/commit/6fb8c78f429c5faf6f819daf3c49b8c138d7b830))
+* 添加 mysql_sql_mode 变量，用于自定义sql_mode，默认值保持和官方一致 ([454aa4a](https://github.com/daixijun/ansible-role-mysql/commit/454aa4a79a07e72f3dba2b9fcab29a608a0855bc))
+
+
+### Bug Fixes
+
+* 移除ssl相关配置,因为默认就已经开启并全自动生成证书 ([5936998](https://github.com/daixijun/ansible-role-mysql/commit/5936998125be19f161441ad70d66777cf428561e))
+* **mgr:** 修复MGR实例重启 ([885ba73](https://github.com/daixijun/ansible-role-mysql/commit/885ba73ad76d7d9bd4cc4b9154625e74af04a06f))
+
 ## [1.4.0](https://github.com/daixijun/ansible-role-mysql/compare/v1.3.1...v1.4.0) (2020-02-27)
 
 
