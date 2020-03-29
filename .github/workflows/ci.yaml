@@ -25,3 +25,9 @@ jobs:
           cp -rf ansible-role-mysql daixijun.mysql
           cd daixijun.mysql
           molecule test --scenario-name ${{ matrix.scenario }}
+      - name: Publish role to Galaxy
+        if: success()
+        run: |
+          if [[ "${{ matrix.os }}" == "centos7" ]]; then
+            ansible-galaxy role import --api-key ${{ secrets.ANSIBLE_GALAXY_API_KEY }} $(echo $GITHUB_REPOSITORY | cut -d/ -f1) $(echo $GITHUB_REPOSITORY | cut -d/ -f2)
+          fi
