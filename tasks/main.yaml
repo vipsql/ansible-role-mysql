@@ -43,8 +43,9 @@
 - name: Download mysql package
   get_url:
     url: "{{ mysql_download_url }}"
-    dest: "{{ role_path }}/files/"
+    dest: "{{ role_path }}/files/{{ mysql_download_url | basename }}"
     checksum: "md5:{{ mysql_download_url }}.md5"
+    timeout: 300
   become: false
   run_once: true
   delegate_to: localhost
