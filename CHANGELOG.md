@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.5.1](https://github.com/daixijun/ansible-role-mysql/compare/v1.5.0...v1.5.1) (2020-03-30)
+
+
+### Bug Fixes
+
+* 增加mysql包下载超时为300秒 ([e636af4](https://github.com/daixijun/ansible-role-mysql/commit/e636af4af3fc043ede83008734762d33d8f4f938))
+
 ## [1.5.0](https://github.com/daixijun/ansible-role-mysql/compare/v1.4.0...v1.5.0) (2020-03-27)
 
 
