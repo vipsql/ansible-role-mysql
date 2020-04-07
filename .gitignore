@@ -1,5 +1,4 @@
-molecule/default/files
-files/mysql-8.0.17-el7-x86_64.tar.gz
+*.tar.gz
 files/ssl/*
 .vscode/
 __pycache__/
