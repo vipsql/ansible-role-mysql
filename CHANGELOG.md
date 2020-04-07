@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.5.2](https://github.com/daixijun/ansible-role-mysql/compare/v1.5.1...v1.5.2) (2020-04-07)
+
+
+### Bug Fixes
+
+* **molecule:** 修复软链接造成的 playbook_dir 路径错误的问题 ([1289445](https://github.com/daixijun/ansible-role-mysql/commit/1289445faf4543a8edcc52c06d363c3243cea1b7))
+* 修复mysql安装目录权限问题 ([cf5bccc](https://github.com/daixijun/ansible-role-mysql/commit/cf5bccc0950d9ad949bc1a02cff55f1747c2c49f))
+
 ### [1.5.1](https://github.com/daixijun/ansible-role-mysql/compare/v1.5.0...v1.5.1) (2020-03-30)
 
 
