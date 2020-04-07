@@ -1,6 +1,10 @@
 daixijun.mysql
 =========
 
+[![Build Status](https://github.com/daixijun/ansible-role-mysql/workflows/ci/badge.svg)](https://github.com/daixijun/ansible-role-mysql/actions)
+[![Ansible Galaxy](https://img.shields.io/badge/galaxy-daixijun.mysql-660198.svg?style=flat)](https://galaxy.ansible.com/daixijun/mysql/)
+[![GitHub tag (latest SemVer)](https://img.shields.io/github/v/tag/daixijun/ansible-role-mysql?sort=semver)](https://github.com/daixijun/ansible-role-mysql/tags)
+
 用于快速部署 mysql 集群
 
 支持以下几种集群模式:
