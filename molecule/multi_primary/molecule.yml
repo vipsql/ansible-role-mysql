@@ -38,6 +38,7 @@ provisioner:
       verbosity: 1
   playbooks:
     converge: ${MOLECULE_PLAYBOOK:-converge.yml}
+    prepare: ../master_slave/prepare.yml
 verifier:
   # name: testinfra
   name: ansible

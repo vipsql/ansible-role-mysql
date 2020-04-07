@@ -5,7 +5,7 @@
   roles:
     - role: daixijun.mysql
       mysql_group_replication_single_primary_mode: true
-      mysql_download_url: https://cdn.mysql.com/Downloads/MySQL-8.0/mysql-{{ mysql_version }}-el7-x86_64.tar.gz
+      # mysql_download_url: https://cdn.mysql.com/Downloads/MySQL-8.0/mysql-{{ mysql_version }}-el7-x86_64.tar.gz
       mysql_databases:
         - name: db1
       mysql_users:
