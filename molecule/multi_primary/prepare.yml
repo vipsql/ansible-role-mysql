@@ -1,1 +1,13 @@
-../master_slave/prepare.yml
+---
+- name: Prepare
+  hosts: all
+  gather_facts: false
+  tasks:
+    - name: Create {{ playbook_dir }}/files directory
+      file:
+        path: "{{ playbook_dir }}/files/"
+        state: directory
+        recurse: True
+      delegate_to: localhost
+      become: false
+      run_once: true
