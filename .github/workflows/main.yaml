@@ -23,7 +23,7 @@ jobs:
           path: molecule/${{ matrix.scenario }}/files/
           key: ${{ runner.os }}-mysql-${{ matrix.mysql-version }}
           restore-keys: |
-            ${{ runner.os }}-mysql-${{ matrix.mysql-version }}
+            ${{ matrix.os }}-mysql-${{ matrix.mysql-version }}
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
