@@ -1,11 +1,13 @@
 ---
-name: ci
+name: build
 on: [push]
 jobs:
   test:
     runs-on: ubuntu-latest
     strategy:
       matrix:
+        os: [centos7, centos8]
+        mysql-version: [8.0.17, 8.0.18, 8.0.19]
         scenario: [single_primary, multi_primary, master_slave]
     steps:
       - name: Checkout
@@ -20,14 +22,14 @@ jobs:
           python -m pip install --upgrade pip
           pip install ansible "molecule[docker,lint]"
       - name: Test with molecule
+        env:
+          MOLECULE_DISTRO: ${{ matrix.os }}
+          MYSQL_VERSION: ${{ matrix.mysql-version }}
         run: |
           cd ..
-          cp -rf ansible-role-mysql daixijun.mysql
+          ln -sf ansible-role-mysql daixijun.mysql
           cd daixijun.mysql
           molecule test --scenario-name ${{ matrix.scenario }}
       - name: Publish role to Galaxy
         if: success()
-        run: |
-          if [[ "${{ matrix.scenario }}" == "single_primary" ]]; then
-            ansible-galaxy role import --api-key ${{ secrets.ANSIBLE_GALAXY_API_KEY }} $(echo $GITHUB_REPOSITORY | cut -d/ -f1) $(echo $GITHUB_REPOSITORY | cut -d/ -f2)
-          fi
+        run: ansible-galaxy role import --api-key ${{ secrets.ANSIBLE_GALAXY_API_KEY }} $(echo $GITHUB_REPOSITORY | cut -d/ -f1) $(echo $GITHUB_REPOSITORY | cut -d/ -f2)
