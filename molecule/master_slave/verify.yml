@@ -2,7 +2,7 @@
 - name: Verify
   hosts: all
   become: true
-  gather_facts: false
+  gather_facts: True
   any_errors_fatal: yes
   tasks:
     - name: Gather service facts
