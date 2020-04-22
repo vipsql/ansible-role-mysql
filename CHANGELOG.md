@@ -2,6 +2,37 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.0.0](https://github.com/daixijun/ansible-role-mysql/compare/v1.5.2...v2.0.0) (2020-04-22)
+
+
+### ⚠ BREAKING CHANGES
+
+* 修改默认sql_mode为空
+* 修改 Master-Slave 同步试为基于GTID的主从复制
+
+### Features
+
+* 修改 Master-Slave 为基于GTID方式进行主从复制 ([278049e](https://github.com/daixijun/ansible-role-mysql/commit/278049ec1a284df418d10395e6f547b77ec2e685))
+* 增加 mysql 依赖包对 RHEL/CentOS 7/8 的支持 ([2ad8426](https://github.com/daixijun/ansible-role-mysql/commit/2ad8426a03bd56dbd5b6ae606dddf4dfa78a4654))
+* 添加 ~/.my.cnf 模板文件 ([b8ab69e](https://github.com/daixijun/ansible-role-mysql/commit/b8ab69e81f137faf1a2432cd09dadb9bdfe486b2))
+* 添加 cleanup 逻辑 ([7080bf1](https://github.com/daixijun/ansible-role-mysql/commit/7080bf1ca9ed5f84324aa2addde69e060600916d))
+* 添加下载安装包多版本支持,增加 mysql_default_time_zome 参数用于设置时区 ([198abfe](https://github.com/daixijun/ansible-role-mysql/commit/198abfe635152d789b6475f0c7a5f82d5301b990))
+* **mgr:** 支持 mysql_seconday 主机组 ([2415af6](https://github.com/daixijun/ansible-role-mysql/commit/2415af60eb4ded3cc38a7ef0b6f780ad081499ab))
+* 添加加载 clone 插件 ([174558d](https://github.com/daixijun/ansible-role-mysql/commit/174558de47d695e1b6971dd15b7bbeb8ed2f8799))
+
+
+### Bug Fixes
+
+* 修复GTID模式下主从复制账号同步问题 ([44a2a90](https://github.com/daixijun/ansible-role-mysql/commit/44a2a907270ba4924782ab0f2fe3ae479281ffba))
+* 修改业务用户创建逻辑 ([5e1b195](https://github.com/daixijun/ansible-role-mysql/commit/5e1b195a6d12db973b7a0846024bb17ff8e21c50))
+* 修改默认下载地址为官方CDN ([f4c835b](https://github.com/daixijun/ansible-role-mysql/commit/f4c835b6986ac5e395fdba7e5f81c0386a6f40ec))
+* 将 创建账号,安装依赖 的逻辑移到prepare ([e5e61d8](https://github.com/daixijun/ansible-role-mysql/commit/e5e61d8c1982b4bd9bc6e7133dc3b52c63f6eb81))
+
+
+### improvement
+
+* 修改默认sql_mode 为空 ([15703ee](https://github.com/daixijun/ansible-role-mysql/commit/15703ee82444e89f2a88adf3798c4ec9bc9c2190))
+
 ### [1.5.2](https://github.com/daixijun/ansible-role-mysql/compare/v1.5.1...v1.5.2) (2020-04-07)
 
 
