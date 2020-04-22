@@ -1,31 +1,12 @@
 ---
-- name: Ensure replication user
-  mysql_user:
-    name: "{{ mysql_repl_user | default('repl') }}"
-    host: "%"
-    password: "{{ mysql_repl_password }}"
-    login_user: root
-    login_password: "{{ mysql_root_password }}"
-    login_unix_socket: "{{ mysql_socket }}"
-    priv: "*.*:REPLICATION SLAVE"
-    sql_log_bin: false
-    state: present
-  no_log: true
-
 - name: Verify that cluster status
   mysql_query:
-    login_user: root
-    login_password: "{{ mysql_root_password }}"
-    login_unix_socket: "{{ mysql_socket }}"
     query: SELECT member_state FROM performance_schema.replication_group_members WHERE member_id=@@server_uuid
   register: _cluster_status
 
 - name: Change master for channel
   mysql_replication:
     mode: changemaster
-    login_user: root
-    login_password: "{{ mysql_root_password }}"
-    login_unix_socket: "{{ mysql_socket }}"
     master_user: repl
     master_password: "{{ mysql_repl_password }}"
     channel: group_replication_recovery
@@ -34,54 +15,41 @@
 
 - name: Verify that the primary node status
   mysql_query:
-    login_user: root
-    login_password: "{{ mysql_root_password }}"
-    login_unix_socket: "{{ mysql_socket }}"
     query: SELECT * FROM performance_schema.replication_group_members where member_role='PRIMARY'
   run_once: true
-  # no_log: yes
   register: mysql_mgr_primary_status
-  when: ansible_play_hosts.index(inventory_hostname) == 0
+  when:
+    - ('mysql_primary' in groups and inventory_hostname in groups['mysql_primary']) or ansible_play_hosts.index(inventory_hostname) == 0
   tags:
     - skip_ansible_lint
 
 - name: Initializing MGR cluster
   mysql_query:
-    login_user: root
-    login_password: "{{ mysql_root_password }}"
-    login_unix_socket: "{{ mysql_socket }}"
     query:
       - "SET GLOBAL group_replication_bootstrap_group=ON;"
       - "START GROUP_REPLICATION;"
       - "SET GLOBAL group_replication_bootstrap_group=OFF;"
   run_once: true
   when:
-    - ansible_play_hosts.index(inventory_hostname) == 0
+    - ('mysql_primary' in groups and inventory_hostname in groups['mysql_primary']) or ansible_play_hosts.index(inventory_hostname) == 0
     - mysql_mgr_primary_status.rowcount[0]|int == 0
   tags:
     - skip_ansible_lint
 
 - name: Verify that the member nodes status
   mysql_query:
-    login_user: root
-    login_password: "{{ mysql_root_password }}"
-    login_unix_socket: "{{ mysql_socket }}"
     query: SELECT member_state FROM performance_schema.replication_group_members where member_id=@@server_uuid
   register: mysql_mgr_member_status
-  # no_log: yes
   when:
-    - ansible_play_hosts.index(inventory_hostname) != 0
+    - ('mysql_secondary' in groups and inventory_hostname in groups['mysql_secondary']) or ansible_play_hosts.index(inventory_hostname) != 0
   tags:
     - skip_ansible_lint
 
 - name: Startting MGR cluster member nodes
   mysql_query:
-    login_user: root
-    login_password: "{{ mysql_root_password }}"
-    login_unix_socket: "{{ mysql_socket }}"
     query: "START GROUP_REPLICATION;"
   when:
-    - ansible_play_hosts.index(inventory_hostname) != 0
+    - ('mysql_secondary' in groups and inventory_hostname in groups['mysql_secondary']) or ansible_play_hosts.index(inventory_hostname) != 0
     - mysql_mgr_member_status.rowcount[0]|int == 0 or mysql_mgr_member_status.query_result[0][0].member_state != 'ONLINE'
   tags:
     - skip_ansible_lint
@@ -92,34 +60,18 @@
     dest: /tmp/gr_member_routing_candidate_status.sql
   run_once: true
   when:
-    - ansible_play_hosts.index(inventory_hostname) == 0
+    - ('mysql_primary' in groups and inventory_hostname in groups['mysql_primary']) or ansible_play_hosts.index(inventory_hostname) == 0
+    - mysql_initialize_status is not skipped
 
 - name: Create internal view sys.gr_member_routing_candidate_status for monitoring
   shell: /usr/local/mysql/bin/mysql -uroot -p'{{ mysql_root_password }}' --socket={{ mysql_socket }} < /tmp/gr_member_routing_candidate_status.sql
   no_log: yes
   run_once: true
   when:
-    - ansible_play_hosts.index(inventory_hostname) == 0
+    - ('mysql_primary' in groups and inventory_hostname in groups['mysql_primary']) or ansible_play_hosts.index(inventory_hostname) == 0
     - mysql_initialize_status is not skipped
 
-# FIXME: 模块对于mysql8.0以上的版本，给用户授权`ALL`权限的时候会出现幂等性问题
-# 临时的解决方案是强制设置为 `changed_when: false`
-- name: Ensure business users (MGR)
-  mysql_user:
-    name: "{{ item.name }}"
-    host: "{{ item.host | default('%') }}"
-    password: "{{ item.password }}"
-    encrypted: "{{ item.encrypted | default(omit) }}"
-    priv: "{{ item.priv | default(omit) }}"
-    require_ssl: "{{ item.require_ssl | default(omit) }}"
-    login_user: root
-    login_password: "{{ mysql_root_password }}"
-    login_unix_socket: "{{ mysql_socket }}"
-    state: "{{ item.state | default(omit) }}"
-  run_once: true
-  # changed_when: false
-  no_log: yes
-  loop: "{{ mysql_users }}"
-  when:
-    - ansible_play_hosts.index(inventory_hostname) == 0
-    - mysql_users|length > 0
+- name: Show Group Replication status
+  mysql_query:
+    query: SELECT * FROM performance_schema.replication_group_members
+  run_once: True
