@@ -168,12 +168,12 @@
     priv: "{{ item.priv | default(omit) }}"
     require_ssl: "{{ item.require_ssl | default(omit) }}"
     state: "{{ item.state | default(omit) }}"
-  run_once: "{{ True if mysql_cluster_type == 'mgr' else False }}"
-  no_log: yes
+  run_once: True
+  # no_log: yes
   loop: "{{ mysql_users }}"
   when:
     - mysql_users|length > 0
-    - (mysql_cluster_type == 'mgr' and (('mysql_primary' in groups and inventory_hostname in groups['mysql_primary']) or ansible_play_hosts.index(inventory_hostname) == 0)) or mysql_cluster_type == 'ms'
+    - "('mysql_primary' in groups and inventory_hostname in groups['mysql_primary']) or ansible_play_hosts.index(inventory_hostname) == 0"
 
 - name: Import Cleanup tasks
   import_tasks: cleanup.yaml
