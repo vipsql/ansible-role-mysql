@@ -6,7 +6,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        os: [centos7, centos8]
+        os: [centos7]
         mysql-version: [8.0.17, 8.0.18, 8.0.19]
         scenario: [single_primary, multi_primary, master_slave]
     steps:
