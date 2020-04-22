@@ -39,7 +39,7 @@ table_open_cache_instances                   = 16
 skip_name_resolve               = ON
 
 # 时区
-default_time_zone               = "+8:00"
+default_time_zone               = "{{ mysql_default_time_zome | default('+8:00') }}"
 
 # INNODB 优化
 innodb_file_per_table           = 1  # 独立表空间
@@ -116,6 +116,11 @@ audit_log_exclude_accounts                   = NULL
 audit_log_policy                             = 'ALL'
 audit_log_statement_policy                   = 'ALL'
 audit_log_strategy                           = 'SEMISYNCHRONOUS'
+{% endif %}
+
+{% if mysql_version is version('8.0.17', operator='>=') %}
+plugin-load-add                              = mysql_clone.so        # 加载clone插件
+# clone                                        = FORCE_PLUS_PERMANENT  # 强制加载clone插件，如果插件初始化失败，则mysqld会启动失败
 {% endif %}
 
 {% if mysql_cluster_type == 'mgr' %}
