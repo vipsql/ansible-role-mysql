@@ -21,7 +21,7 @@ jobs:
         id: cache
         with:
           path: molecule/${{ matrix.scenario }}/files/
-          key: ${{ runner.os }}-mysql-${{ matrix.mysql-version }}
+          key: ${{ matrix.os }}-mysql-${{ matrix.mysql-version }}
           restore-keys: |
             ${{ matrix.os }}-mysql-${{ matrix.mysql-version }}
       - name: Install dependencies
