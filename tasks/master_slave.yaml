@@ -1,42 +1,9 @@
 ---
-- name: Ensure replication user
-  mysql_user:
-    name: repl
-    host: "%"
-    password: "{{ mysql_repl_password }}"
-    login_user: root
-    login_password: "{{ mysql_root_password }}"
-    login_unix_socket: "{{ mysql_socket }}"
-    priv: "*.*:REPLICATION SLAVE"
-    sql_log_bin: false
-    state: present
-  no_log: true
-  when:
-    - mysql_cluster_role == 'master'
-
 - name: Check if slave is already configured for replication
   mysql_replication:
     mode: getslave
-    login_user: root
-    login_password: "{{ mysql_root_password }}"
-    login_unix_socket: "{{ mysql_socket }}"
-  ignore_errors: true
   register: slave
   when: mysql_cluster_role == 'slave'
-
-- name: Get the current master server replication status
-  mysql_replication:
-    mode: getmaster
-    login_user: root
-    login_password: "{{ mysql_root_password }}"
-    login_unix_socket: "{{ mysql_socket }}"
-  delegate_to: "{{ mysql_replication_master }}"
-  register: repl_stat
-  when:
-    - slave.Is_Slave is defined
-    - not slave.Is_Slave
-    - mysql_cluster_role == 'slave'
-    - mysql_replication_master | length > 0
 
 - name: Change the master in slave to start the replication
   mysql_replication:
@@ -44,39 +11,24 @@
     master_host: "{{ hostvars[mysql_replication_master]['ansible_'+mysql_interface].ipv4.address if mysql_interface else hostvars[mysql_replication_master].ansible_default_ipv4.address }}"
     master_user: "{{ mysql_repl_user | default('repl') }}"
     master_password: "{{ mysql_repl_password }}"
-    master_log_file: "{{ repl_stat.File }}"
-    master_log_pos: "{{ repl_stat.Position }}"
-    login_user: root
-    login_password: "{{ mysql_root_password }}"
-    login_unix_socket: "{{ mysql_socket }}"
+    master_auto_position: True
   when:
-    - slave.Is_Slave is defined
-    - not slave.Is_Slave
     - mysql_cluster_role == 'slave'
-    - mysql_replication_master | length > 0
-    - repl_stat is defined
-  ignore_errors: true
+    - not slave.Is_Slave
+    - mysql_replication_master|length > 0
 
 - name: Start replication
   mysql_replication:
     mode: startslave
-    login_user: root
-    login_password: "{{ mysql_root_password }}"
-    login_unix_socket: "{{ mysql_socket }}"
   when:
-    - slave.Is_Slave is defined
-    - not slave.Is_Slave
     - mysql_cluster_role == 'slave'
-    - mysql_replication_master | length > 0
+    - not slave.Is_Slave
+    - mysql_replication_master|length > 0
 
 - name: Query Master-Slave Cluster status
   mysql_replication:
     mode: getslave
-    login_user: root
-    login_password: "{{ mysql_root_password }}"
-    login_unix_socket: "{{ mysql_socket }}"
   register: ms_cluster_status
-  # changed_when: false
   no_log: yes
   when:
     - mysql_cluster_role == 'slave'
@@ -92,31 +44,3 @@
   when:
     - mysql_cluster_role == 'slave'
     - ms_cluster_status is not skipped
-
-# - name: Show Master-Slave Cluster status
-#   debug:
-#     var: ms_cluster_status
-#     verbosity: 1
-#   when:
-#     - mysql_cluster_role == 'slave'
-#     - ms_cluster_status is not skipped
-
-# FIXME: 模块对于mysql8.0以上的版本，给用户授权`ALL`权限的时候会出现幂等性问题
-# 临时的解决方案是强制设置为 `changed_when: false`
-- name: Ensure business users (Master-Slave)
-  mysql_user:
-    name: "{{ item.name }}"
-    host: "{{ item.host | default('%') }}"
-    password: "{{ item.password }}"
-    encrypted: "{{ item.encrypted | default(omit) }}"
-    priv: "{{ item.priv | default(omit) }}"
-    require_ssl: "{{ item.require_ssl | default(omit) }}"
-    login_user: root
-    login_password: "{{ mysql_root_password }}"
-    login_unix_socket: "{{ mysql_socket }}"
-    state: "{{ item.state | default(omit) }}"
-    sql_log_bin: false
-  no_log: yes
-  loop: "{{ mysql_users }}"
-  when:
-    - mysql_users|length > 0
