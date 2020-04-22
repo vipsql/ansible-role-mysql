@@ -1,2 +1,0 @@
-mysql_cluster_role: slave
-mysql_replication_master: master

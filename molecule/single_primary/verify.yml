@@ -39,3 +39,6 @@
           - socket_stat.stat.mode == "0777"
           - socket_stat.stat.pw_name == "mysql"
           - socket_stat.stat.gr_name == "mysql"
+    # - name: Gathers information about MySQL servers
+    #   mysql_info:
+    #   run_once: True

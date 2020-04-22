@@ -1,0 +1,12 @@
+- name: Side Effect
+  hosts: all
+  gather_facts: False
+  tasks:
+    - name: Restart Primary
+      mysql_query:
+        query: "{{ item }}"
+      loop:
+        - STOP GROUP_REPLICATION
+        - START GROUP_REPLICATION
+      when:
+        - ('mysql_primary' in groups and inventory_hostname in groups['mysql_primary']) or ansible_play_hosts.index(inventory_hostname) == 0

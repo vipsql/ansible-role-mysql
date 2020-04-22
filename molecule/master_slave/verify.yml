@@ -5,24 +5,21 @@
   gather_facts: false
   any_errors_fatal: yes
   tasks:
-    - name: Gather the rpm package facts
-      package_facts:
-        manager: rpm
-      no_log: yes
-
-    - name: Assert that the python2-PyMySQL package is installed
-      assert:
-        that:
-          - "'python2-PyMySQL' in ansible_facts.packages"
-
     - name: Gather service facts
       service_facts:
       no_log: yes
 
-    - name: Assert that the service is in the expected state
+    - name: Assert that the service state is running
       assert:
         that:
           - ansible_facts.services["mysqld.service"].state == "running"
+
+    - name: Assert that the service status is enabled
+      assert:
+        that:
+          - ansible_facts.services["mysqld.service"].status == "enabled"
+      when:
+        - ansible_virtualization_type != "docker"
 
     - name: Stat socket file
       stat:
