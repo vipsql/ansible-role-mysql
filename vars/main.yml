@@ -1,2 +1,22 @@
 ---
 # vars file for daixijun.mysql
+__mysql_dependencies:
+  RedHat_7:
+    - tzdata
+    - openssl
+    - openssl-devel
+    - libaio-devel
+    - numactl
+    - numactl-libs
+    - python2-PyMySQL
+    - pyOpenSSL
+  RedHat_8:
+    - tzdata
+    - openssl
+    - openssl-devel
+    - libaio-devel
+    - numactl
+    - numactl-libs
+    - python3-PyMySQL
+    - python3-pyOpenSSL
+mysql_dependencies: "{{ __mysql_dependencies[ansible_os_family+'_'+ansible_distribution_major_version] }}"
