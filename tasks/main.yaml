@@ -1,37 +1,6 @@
 ---
 - import_tasks: prepare.yaml
 
-- name: Ensure mysql group
-  group:
-    name: mysql
-    system: yes
-    state: present
-
-- name: Ensure mysql user
-  user:
-    group: mysql
-    name: mysql
-    system: yes
-    comment: mysql daemon user
-    create_home: false
-    shell: /bin/false
-    state: present
-
-- name: Installing dependencies
-  yum:
-    name: "{{ dependencies }}"
-    state: present
-  vars:
-    dependencies:
-      - tzdata
-      - openssl
-      - openssl-devel
-      - libaio-devel
-      - numactl-libs
-      - python-PyMySQL
-      - python-cryptography
-  no_log: true
-
 - name: Download mysql package
   get_url:
     url: "{{ mysql_download_url }}"
@@ -144,16 +113,31 @@
   no_log: true
   when: mysql_initialize_status is not skipped
 
+# 一定要在更新完root密码后才生成，否则更新密码时会认证失败
+- name: Generate ~/.my.cnf
+  template:
+    src: user.my.cnf.j2
+    dest: /root/.my.cnf
+    owner: root
+    group: root
+    mode: 0400
+  no_log: True
+
 - name: Removes all anonymous user accounts
   mysql_user:
     name: ""
     host_all: yes
-    login_user: root
-    login_password: "{{ mysql_root_password }}"
-    login_unix_socket: "{{ mysql_socket }}"
     sql_log_bin: false
     state: absent
-  no_log: true
+
+- name: Ensure replication user
+  mysql_user:
+    name: "{{ mysql_repl_user | default('repl') }}"
+    host: "%"
+    password: "{{ mysql_repl_password }}"
+    priv: "*.*:REPLICATION SLAVE"
+    sql_log_bin: false
+    state: present
 
 - name: Include MGR tasks
   include_tasks: mysql_group_replication.yaml
@@ -166,12 +150,30 @@
 - name: Ensure business databases
   mysql_db:
     name: "{{ item.name }}"
-    login_user: root
-    login_password: "{{ mysql_root_password }}"
-    login_unix_socket: "{{ mysql_socket }}"
     state: "{{ item.state | default('present') }}"
   run_once: true
   loop: "{{ mysql_databases }}"
   when:
     - mysql_databases|length > 0
-    - (mysql_cluster_type == 'mgr' and ansible_play_hosts.index(inventory_hostname) == 0) or (mysql_cluster_type == 'ms' and mysql_cluster_role == 'master')
+    - (mysql_cluster_type == 'mgr' and (('mysql_primary' in groups and inventory_hostname in groups['mysql_primary']) or ansible_play_hosts.index(inventory_hostname) == 0)) or (mysql_cluster_type == 'ms' and mysql_cluster_role == 'master')
+
+# FIXME(@daixijun): 模块对于mysql8.0以上的版本，给用户授权`ALL`权限的时候会出现幂等性问题
+# 临时的解决方案是强制设置为 `changed_when: false`
+- name: Ensure business users
+  mysql_user:
+    name: "{{ item.name }}"
+    host: "{{ item.host | default('%') }}"
+    password: "{{ item.password }}"
+    encrypted: "{{ item.encrypted | default(omit) }}"
+    priv: "{{ item.priv | default(omit) }}"
+    require_ssl: "{{ item.require_ssl | default(omit) }}"
+    state: "{{ item.state | default(omit) }}"
+  run_once: "{{ True if mysql_cluster_type == 'mgr' else False }}"
+  no_log: yes
+  loop: "{{ mysql_users }}"
+  when:
+    - mysql_users|length > 0
+    - (mysql_cluster_type == 'mgr' and (('mysql_primary' in groups and inventory_hostname in groups['mysql_primary']) or ansible_play_hosts.index(inventory_hostname) == 0)) or mysql_cluster_type == 'ms'
+
+- name: Import Cleanup tasks
+  import_tasks: cleanup.yaml
