@@ -1,6 +1,6 @@
 ---
 mysql_version: 8.0.17
-mysql_download_url: https://mirrors.tuna.tsinghua.edu.cn/mysql/downloads/MySQL-8.0/mysql-{{ mysql_version }}-el{{ ansible_distribution_major_version }}-{{ ansible_architecture }}.tar.gz
+mysql_download_url: https://cdn.mysql.com/Downloads/MySQL-8.0/mysql-{{ mysql_version }}-el{{ ansible_distribution_major_version }}-{{ ansible_architecture }}.tar.gz
 mysql_datadir: /data/mysql
 mysql_logdir: /var/log/mysqld
 mysql_pidfile: /var/run/mysqld/mysqld.pid
