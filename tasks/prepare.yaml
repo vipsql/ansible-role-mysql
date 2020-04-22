@@ -11,3 +11,24 @@
   stat:
     path: /usr/local/mysql/bin/mysqld
   register: _mysql_stat
+
+- name: Ensure mysql group
+  group:
+    name: mysql
+    system: yes
+    state: present
+
+- name: Ensure mysql user
+  user:
+    group: mysql
+    name: mysql
+    system: yes
+    comment: mysql daemon user
+    create_home: false
+    shell: /bin/false
+    state: present
+
+- name: Installing dependencies
+  package:
+    name: "{{ mysql_dependencies }}"
+    state: present
