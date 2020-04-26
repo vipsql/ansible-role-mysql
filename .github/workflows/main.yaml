@@ -9,7 +9,12 @@ jobs:
         os: [centos7]
         mysql-version: [8.0.17, 8.0.18, 8.0.19]
         scenario:
-          [single_primary, multi_primary, master_slave_gtid, mysql_slave_binlog]
+          [
+            single_primary,
+            multi_primary,
+            master_slave_gtid,
+            master_slave_binlog,
+          ]
     steps:
       - name: Checkout
         uses: actions/checkout@v2
