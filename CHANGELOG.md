@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.1.0](https://github.com/daixijun/ansible-role-mysql/compare/v2.0.0...v2.1.0) (2020-04-26)
+
+
+### Features
+
+* 主从复制支持通过 mysql_replication_based 变量配置为基于 gtid 或 binlog 方式同步 ([d4debc6](https://github.com/daixijun/ansible-role-mysql/commit/d4debc6c806b1965ed4a3bae48fdd2a605fd8693))
+* 添加 mysql_replication_based 变量 ([d070eec](https://github.com/daixijun/ansible-role-mysql/commit/d070eec063f421bf88dc056d345f202628d85577))
+
 ## [2.0.0](https://github.com/daixijun/ansible-role-mysql/compare/v1.5.2...v2.0.0) (2020-04-22)
 
 
