@@ -1,0 +1,78 @@
+---
+- name: Verify
+  hosts: all
+  become: true
+  gather_facts: True
+  any_errors_fatal: yes
+  tasks:
+    - name: Gather service facts
+      service_facts:
+      no_log: yes
+
+    - name: Assert that the service state is running
+      assert:
+        that:
+          - ansible_facts.services["mysqld"].state == "running"
+          - ansible_facts.services["mysqld"].status == "enabled"
+
+    - name: Stat socket file
+      stat:
+        path: /var/run/mysqld/mysqld.sock
+        get_checksum: no
+      register: socket_stat
+      no_log: yes
+
+    - name: Assert that the socket file is in the expected state
+      assert:
+        that:
+          - socket_stat.stat.exists
+          - socket_stat.stat.issock
+          - socket_stat.stat.mode == "0777"
+          - socket_stat.stat.pw_name == "mysql"
+          - socket_stat.stat.gr_name == "mysql"
+
+    - name: Gathers information about MySQL servers
+      mysql_info:
+        filter:
+          - "!databases"
+          - "!settings"
+          - "!engines"
+          - "users"
+          - "slave_status"
+          - "slave_hosts"
+          - "version"
+      register: _info
+      no_log: True
+
+    - name: Assert that slave hosts
+      assert:
+        that:
+          - _info.slave_hosts|length == groups['mysql_secondary']|length
+      when:
+        - "('mysql_primary' in groups and inventory_hostname in groups['mysql_primary']) or ansible_play_hosts.index(inventory_hostname) == 0"
+
+    - name: Asset that slave status
+      assert:
+        that:
+          - master_host in _info.slave_status
+          - _info.slave_status[master_host]['3306']['repl']['Slave_IO_Running'] == 'Yes'
+          - _info.slave_status[master_host]['3306']['repl']['Slave_SQL_Running'] == 'Yes'
+      vars:
+        master_host: "{{ hostvars[ansible_play_hosts[0]].ansible_default_ipv4.address }}"
+      when:
+        - "('mysql_secondary' in groups and inventory_hostname in groups['mysql_secondary']) or ansible_play_hosts.index(inventory_hostname) > 0"
+
+    - name: Assert that users
+      assert:
+        that:
+          - "'monitor' in _info.users['%']"
+          - "'proxysql' in _info.users['%']"
+
+    - name: Show databases
+      mysql_query:
+        query: SHOW DATABASES
+      register: _res
+      vars:
+        database:
+          Database: db1
+      failed_when: database not in _res.query_result[0]

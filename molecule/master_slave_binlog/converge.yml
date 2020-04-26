@@ -5,6 +5,7 @@
   roles:
     - role: daixijun.mysql
       mysql_cluster_type: ms
+      mysql_replication_based: binlog
       mysql_databases:
         - name: db1
       mysql_users:
