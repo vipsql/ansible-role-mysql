@@ -110,7 +110,7 @@
     login_user: root
     login_unix_socket: "{{ mysql_socket }}"
     sql_log_bin: false
-  no_log: true
+  # no_log: true
   when: mysql_initialize_status is not skipped
 
 # 一定要在更新完root密码后才生成，否则更新密码时会认证失败
@@ -155,7 +155,7 @@
   loop: "{{ mysql_databases }}"
   when:
     - mysql_databases|length > 0
-    - (mysql_cluster_type == 'mgr' and (('mysql_primary' in groups and inventory_hostname in groups['mysql_primary']) or ansible_play_hosts.index(inventory_hostname) == 0)) or (mysql_cluster_type == 'ms' and mysql_cluster_role == 'master')
+    - "('mysql_primary' in groups and inventory_hostname in groups['mysql_primary']) or ansible_play_hosts.index(inventory_hostname) == 0"
 
 # FIXME(@daixijun): 模块对于mysql8.0以上的版本，给用户授权`ALL`权限的时候会出现幂等性问题
 # 临时的解决方案是强制设置为 `changed_when: false`
@@ -168,12 +168,13 @@
     priv: "{{ item.priv | default(omit) }}"
     require_ssl: "{{ item.require_ssl | default(omit) }}"
     state: "{{ item.state | default(omit) }}"
-  run_once: True
+    sql_log_bin: "{{ False if mysql_cluster_type == 'ms' and mysql_replication_based == 'binlog' else True  }}"
+  run_once: "{{ False if mysql_cluster_type == 'ms' and mysql_replication_based == 'binlog' else True }}"
   # no_log: yes
   loop: "{{ mysql_users }}"
   when:
     - mysql_users|length > 0
-    - "('mysql_primary' in groups and inventory_hostname in groups['mysql_primary']) or ansible_play_hosts.index(inventory_hostname) == 0"
+    - "((mysql_cluster_type == 'mgr' or mysql_replication_based == 'gtid') and ('mysql_primary' in groups and inventory_hostname in groups['mysql_primary']) or ansible_play_hosts.index(inventory_hostname) == 0) or (mysql_cluster_type == 'ms' and mysql_replication_based == 'binlog')"
 
 - name: Import Cleanup tasks
   import_tasks: cleanup.yaml

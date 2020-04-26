@@ -5,13 +5,30 @@
   register: slave
   when: mysql_cluster_role == 'slave'
 
+- name: Get the current master server replication status
+  mysql_replication:
+    mode: getmaster
+    login_user: root
+    login_password: "{{ mysql_root_password }}"
+    login_unix_socket: "{{ mysql_socket }}"
+  delegate_to: "{{ mysql_replication_master }}"
+  register: repl_stat
+  when:
+    - mysql_replication_based == 'binlog'
+    - mysql_cluster_role == 'slave'
+    - slave.Is_Slave is defined
+    - not slave.Is_Slave
+    - mysql_replication_master|length > 0
+
 - name: Change the master in slave to start the replication
   mysql_replication:
     mode: changemaster
     master_host: "{{ hostvars[mysql_replication_master]['ansible_'+mysql_interface].ipv4.address if mysql_interface else hostvars[mysql_replication_master].ansible_default_ipv4.address }}"
     master_user: "{{ mysql_repl_user | default('repl') }}"
     master_password: "{{ mysql_repl_password }}"
-    master_auto_position: True
+    master_auto_position: "{{ True if mysql_replication_based == 'gtid' else False }}"
+    master_log_file: "{{ repl_stat.File|default(omit) }}"
+    master_log_pos: "{{ repl_stat.Position|default(omit) }}"
   when:
     - mysql_cluster_role == 'slave'
     - not slave.Is_Slave
