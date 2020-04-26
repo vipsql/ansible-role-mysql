@@ -6,9 +6,8 @@
     - role: daixijun.mysql
       mysql_remote_src: no
       mysql_group_replication_single_primary_mode: false
-      # mysql_databases:
-      #   - name: t1
-      #     state: absent
+      mysql_databases:
+        - name: db1
       mysql_users:
         - name: monitor
           password: monitor

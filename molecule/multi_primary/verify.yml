@@ -5,16 +5,6 @@
   gather_facts: True
   any_errors_fatal: yes
   tasks:
-    - name: Gather the rpm package facts
-      package_facts:
-        manager: rpm
-      no_log: yes
-
-    - name: Assert that the python2-PyMySQL package is installed
-      assert:
-        that:
-          - "'python2-PyMySQL' in ansible_facts.packages"
-
     - name: Gather service facts
       service_facts:
       no_log: yes
@@ -22,14 +12,8 @@
     - name: Assert that the service state is running
       assert:
         that:
-          - ansible_facts.services["mysqld.service"].state == "running"
-
-    - name: Assert that the service status is enabled
-      assert:
-        that:
-          - ansible_facts.services["mysqld.service"].status == "enabled"
-      when:
-        - ansible_virtualization_type != "docker"
+          - ansible_facts.services["mysqld"].state == "running"
+          - ansible_facts.services["mysqld"].status == "enabled"
 
     - name: Stat socket file
       stat:
@@ -46,3 +30,31 @@
           - socket_stat.stat.mode == "0777"
           - socket_stat.stat.pw_name == "mysql"
           - socket_stat.stat.gr_name == "mysql"
+
+    - name: Gathers information about MySQL servers
+      mysql_info:
+        filter:
+          - users
+      no_log: True
+      register: _info
+
+    - name: Assert that users
+      assert:
+        that:
+          - "'monitor' in _info.users['%']"
+          - "'proxysql' in _info.users['%']"
+
+    - name: Show databases
+      mysql_query:
+        query: SHOW DATABASES
+      register: _res
+      vars:
+        database:
+          Database: db1
+      failed_when: database not in _res.query_result[0]
+
+    - name: Query replication group members
+      mysql_query:
+        query: SELECT * FROM performance_schema.replication_group_members WHERE MEMBER_STATE = 'ONLINE'
+      register: _mgr_res
+      failed_when: _mgr_res.rowcount[0] != groups['mysql'] | length
