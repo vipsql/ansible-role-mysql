@@ -44,7 +44,7 @@ default_time_zone               = "{{ mysql_default_time_zome | default('+8:00')
 # INNODB 优化
 innodb_file_per_table           = 1  # 独立表空间
 innodb_log_file_size            = 256M
-innodb_buffer_pool_size         = {{ (ansible_memtotal_mb / 1024 * 0.7) | int }}G
+innodb_buffer_pool_size         = {{ (ansible_memtotal_mb * 1024 * 1024 * 0.7) | int }}
 innodb_flush_method             = O_DIRECT
 
 # prevent use of non-transactional storage engines
@@ -64,11 +64,17 @@ binlog_cache_size                   = 1M
 binlog_stmt_cache_size              = 1M
 max_binlog_size                     = 128M
 sync_binlog                         = 1
-
+{% if mysql_cluster_type == 'ms' and mysql_replication_based == 'binlog' %}
+replicate-ignore-db                 = mysql
+replicate-ignore-db                 = test
+replicate-ignore-db                 = information_schema
+replicate-ignore-db                 = performance_schema
+replicate-ignore-db                 = sys
+{% endif %}
 {% if mysql_cluster_type == 'ms' and mysql_cluster_role == 'slave' %}
 relay-log                           = relay-bin
 relay-log-index                     = relay-bin-index
-read_only                           = 1  # slave为只读模式
+read_only                           = 1  # slave 普通用户只读模式
 log_slow_slave_statements           = 1  # 在slave上开启慢查询日志，query时间等于 long_query_time
 {% endif %}
 

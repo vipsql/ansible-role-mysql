@@ -18,6 +18,7 @@ mysql_cluster_role: master # slave
 
 # Master/Slave
 mysql_replication_master: "" # master 主机的 inventory_hostname 名称
+mysql_replication_based: gtid # 基于 gtid或binlog 进行主从复制, 可选: gtid/binlog
 
 # 是否开启审计日志
 mysql_audit_log: false
