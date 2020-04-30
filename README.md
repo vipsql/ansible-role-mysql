@@ -20,27 +20,32 @@
 
 ## 变量
 
-| 变量名                                      | 类型   | 默认值                      | 变量说明                                                                  |
-| ------------------------------------------- | ------ | --------------------------- | ------------------------------------------------------------------------- |
-| mysql_version                               | string | 8.0.17                      | mysql 版本                                                                |
-| mysql_download_url                          | string |                             | 免安装压缩包下载地址                                                      |
-| mysql_datadir                               | string | /data/mysql                 |                                                                           | 数据存放目录       |
-| mysql_logdir                                | string | /var/log/mysqld             | 日志存放目录                                                              |
-| mysql_pidfile                               | string | /var/run/mysqld/mysqld.pid  | PID文件位置                                                               |
-| mysql_socket                                | string | /var/run/mysqld/mysqld.sock | Socket文件位置                                                            |
-| mysql_interface                             | string |                             | 指定网卡，默认使用除lo外的第一张网卡                                      |
-| mysql_default_time_zone                     | string | +8:00                       | 指定时区                                                                  |
-| mysql_root_password                         | string |                             | root账号的密码                                                            |
-| mysql_cluster_type                          | string | mgr                         | 集群类型(默认 mgr) 可选 `mgr`(Mysql Group Replication)/`ms`(Master-Slave) |
-| mysql_cluster_role                          | string | master                      | Master-Slave 模式下的实例角色，可选                                       | `master` / `slave` |
-| mysql_replication_master                    | string |                             | Master-Slave 模式下Master实例的名称                                       |
-| mysql_replication_based                     | string | gtid                        | 可选基于 `gtid` 或 `binlog` 方式进程复制(默认 gtid)                       |
-| mysql_repl_user                             | string | repl                        | 用于主从/组复制的账号                                                     |
-| mysql_repl_password                         | string |                             | 用于主从/组复制的账号的密码                                               |
-| mysql_group_replication_name                | uuid   |                             | 组复制集群名                                                              |
-| mysql_group_replication_single_primary_mode | bool   | true                        | MGR集群是否为单主模式                                                     |
-| mysql_databases                             | array  |                             | 需要创建的业务数据库                                                      |
-| mysql_users                                 | array  |                             | 需要创建的用户                                                            |
+| 变量名                                      | 类型       | 默认值                      | 变量说明                                                                                    |
+| ------------------------------------------- | ---------- | --------------------------- | ------------------------------------------------------------------------------------------- |
+| mysql_version                               | string     | 8.0.17                      | mysql 版本                                                                                  |
+| mysql_download_url                          | string     |                             | 免安装压缩包下载地址                                                                        |
+| mysql_datadir                               | string     | /data/mysql                 |                                                                                             | 数据存放目录       |
+| mysql_logdir                                | string     | /var/log/mysqld             | 日志存放目录                                                                                |
+| mysql_pidfile                               | string     | /var/run/mysqld/mysqld.pid  | PID文件位置                                                                                 |
+| mysql_socket                                | string     | /var/run/mysqld/mysqld.sock | Socket文件位置                                                                              |
+| mysql_interface                             | string     |                             | 指定网卡，默认使用除lo外的第一张网卡                                                        |
+| mysql_default_time_zone                     | string     | +8:00                       | 指定时区                                                                                    |
+| mysql_character_set_server                  | string     | utf8mb4                     | 默认字符集                                                                                  |
+| mysql_collation_server                      | string     | utf8mb4_general_ci          | 默认字符序                                                                                  |
+| mysql_max_connections                       | string/int | 505                         | 最大连接数                                                                                  |
+| mysql_max_user_connections                  | string/int | 500                         | 用户最大连接数，必须比 `mysql_max_connections` 小，需要给管理员预留几个连接用于处理异常情况 |
+| mysql_max_connect_errors                    | string/int | 200                         | 最大错误连接数                                                                              |
+| mysql_root_password                         | string     |                             | root账号的密码                                                                              |
+| mysql_cluster_type                          | string     | mgr                         | 集群类型(默认 mgr) 可选 `mgr`(Mysql Group Replication)/`ms`(Master-Slave)                   |
+| mysql_cluster_role                          | string     | master                      | Master-Slave 模式下的实例角色，可选                                                         | `master` / `slave` |
+| mysql_replication_master                    | string     |                             | Master-Slave 模式下Master实例的名称                                                         |
+| mysql_replication_based                     | string     | gtid                        | 可选基于 `gtid` 或传统 `binlog` 方式进行复制(默认 gtid)                                     |
+| mysql_repl_user                             | string     | repl                        | 用于主从/组复制的账号                                                                       |
+| mysql_repl_password                         | string     |                             | 用于主从/组复制的账号的密码                                                                 |
+| mysql_group_replication_name                | uuid       |                             | 组复制集群名                                                                                |
+| mysql_group_replication_single_primary_mode | bool       | true                        | MGR集群是否为单主模式                                                                       |
+| mysql_databases                             | array      |                             | 需要创建的业务数据库                                                                        |
+| mysql_users                                 | array      |                             | 需要创建的用户                                                                              |
 
 ## 依赖
 
@@ -72,7 +77,7 @@ BSD
 
 ## 待办
 
-* [ ] 支持半同步复制
+* [ ] 主从模式下支持半同步复制
 
 ## 注意事项
 

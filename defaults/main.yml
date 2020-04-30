@@ -9,6 +9,11 @@ mysql_root_password: 4cpUc7yyfoTp>o3VCiLq
 mysql_interface: "" # 指定网卡，默认使用除lo外的第一张
 mysql_sql_mode: ""
 mysql_default_time_zome: "+8:00"
+mysql_character_set_server: utf8mb4
+mysql_collation_server: utf8mb4_general_ci
+mysql_max_connections: 505
+mysql_max_user_connections: 500
+mysql_max_connect_errors: 200
 
 # 集群类型:
 ## mgr (Mysql Group Replication): 组复制
