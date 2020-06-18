@@ -74,13 +74,13 @@
     dest: /etc/logrotate.d/mysql
     owner: root
     group: root
-    mode: 0644
+    mode: "644"
 
 - name: Generate mysql startup script
   template:
     src: mysqld.init.j2
     dest: /etc/init.d/mysqld
-    mode: 0755
+    mode: "755"
 
 - name: Check initialize status
   shell: ls -lA {{ mysql_datadir }} | grep -v total | wc -l
@@ -120,7 +120,7 @@
     dest: /root/.my.cnf
     owner: root
     group: root
-    mode: 0400
+    mode: "400"
   no_log: True
 
 - name: Removes all anonymous user accounts

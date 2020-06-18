@@ -8,9 +8,6 @@
 - name: Get the current master server replication status
   mysql_replication:
     mode: getmaster
-    login_user: root
-    login_password: "{{ mysql_root_password }}"
-    login_unix_socket: "{{ mysql_socket }}"
   delegate_to: "{{ mysql_replication_master }}"
   register: repl_stat
   when:

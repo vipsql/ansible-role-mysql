@@ -1,5 +1,5 @@
 ---
-mysql_version: 8.0.17
+mysql_version: 8.0.20
 mysql_download_url: https://cdn.mysql.com/{{ 'archives/mysql-8.0' if mysql_version is version('8.0.17',operator='<=') else  'Downloads/MySQL-8.0' }}/mysql-{{ mysql_version }}-el{{ ansible_distribution_major_version }}-{{ ansible_architecture }}.tar.gz
 mysql_datadir: /data/mysql
 mysql_logdir: /var/log/mysqld
@@ -11,8 +11,8 @@ mysql_sql_mode: ""
 mysql_default_time_zome: "+8:00"
 mysql_character_set_server: utf8mb4
 mysql_collation_server: utf8mb4_general_ci
-mysql_max_connections: 505
-mysql_max_user_connections: 500
+mysql_max_connections: 1005
+mysql_max_user_connections: 100
 mysql_max_connect_errors: 200
 
 # 集群类型:
