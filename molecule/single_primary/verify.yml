@@ -42,7 +42,7 @@
       assert:
         that:
           - "'monitor' in _info.users['%']"
-          - "'proxysql' in _info.users['%']"
+          - "'ic' in _info.users['%']"
 
     - name: Show databases
       mysql_query:
