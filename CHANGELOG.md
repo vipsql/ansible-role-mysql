@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.1.2](https://github.com/daixijun/ansible-role-mysql/compare/v2.1.1...v2.1.2) (2020-06-19)
+
+
+### Bug Fixes
+
+* 修复when中多出的引号问题 ([726b287](https://github.com/daixijun/ansible-role-mysql/commit/726b2879ebfbf3269162fbe0d2aa9e240c82465d))
+* 修改 master-slave 为 primary-secondary ([632b0ba](https://github.com/daixijun/ansible-role-mysql/commit/632b0ba2ee9bbba9317a5267f8c2ef351a7cdc94))
+* 移除默认密码 ([7cac1db](https://github.com/daixijun/ansible-role-mysql/commit/7cac1db9013ed7e454e7882c0163346446938431))
+* **defaults:** 更新默认版本为 8.0.20 ([58ce130](https://github.com/daixijun/ansible-role-mysql/commit/58ce13023aa11b44b20f9ce8385cb41610ad3d62))
+* 添加默认 collation_server 参数 ([02595f0](https://github.com/daixijun/ansible-role-mysql/commit/02595f0cf7114a3c8771a63fdc671550b02a8ffc))
+
 ### [2.1.1](https://github.com/daixijun/ansible-role-mysql/compare/v2.1.0...v2.1.1) (2020-04-28)
 
 
