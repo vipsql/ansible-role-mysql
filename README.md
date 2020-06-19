@@ -24,7 +24,7 @@
 | ------------------------------------------- | ---------- | --------------------------- | ------------------------------------------------------------------------------------------- |
 | mysql_version                               | string     | 8.0.17                      | mysql 版本                                                                                  |
 | mysql_download_url                          | string     |                             | 免安装压缩包下载地址                                                                        |
-| mysql_datadir                               | string     | /data/mysql                 |                                                                                             | 数据存放目录       |
+| mysql_datadir                               | string     | /data/mysql                 |                                                                                             | 数据存放目录                               |
 | mysql_logdir                                | string     | /var/log/mysqld             | 日志存放目录                                                                                |
 | mysql_pidfile                               | string     | /var/run/mysqld/mysqld.pid  | PID文件位置                                                                                 |
 | mysql_socket                                | string     | /var/run/mysqld/mysqld.sock | Socket文件位置                                                                              |
@@ -37,7 +37,7 @@
 | mysql_max_connect_errors                    | string/int | 200                         | 最大错误连接数                                                                              |
 | mysql_root_password                         | string     |                             | root账号的密码                                                                              |
 | mysql_cluster_type                          | string     | mgr                         | 集群类型(默认 mgr) 可选 `mgr`(Mysql Group Replication)/`ms`(Master-Slave)                   |
-| mysql_cluster_role                          | string     | master                      | Master-Slave 模式下的实例角色，可选                                                         | `master` / `slave` |
+| mysql_cluster_role                          | string     | primary                     | Primary-Secondary 模式下的实例角色，可选                                                    | `master`, `primary` / `slave`, `secondary` |
 | mysql_replication_master                    | string     |                             | Master-Slave 模式下Master实例的名称                                                         |
 | mysql_replication_based                     | string     | gtid                        | 可选基于 `gtid` 或传统 `binlog` 方式进行复制(默认 gtid)                                     |
 | mysql_repl_user                             | string     | repl                        | 用于主从/组复制的账号                                                                       |

@@ -3,7 +3,7 @@
   mysql_replication:
     mode: getslave
   register: slave
-  when: mysql_cluster_role == 'slave'
+  when: mysql_cluster_role in ['slave','secondary']'
 
 - name: Get the current master server replication status
   mysql_replication:
@@ -12,7 +12,7 @@
   register: repl_stat
   when:
     - mysql_replication_based == 'binlog'
-    - mysql_cluster_role == 'slave'
+    - mysql_cluster_role in ['slave','secondary']'
     - slave.Is_Slave is defined
     - not slave.Is_Slave
     - mysql_replication_master|length > 0
@@ -27,7 +27,7 @@
     master_log_file: "{{ repl_stat.File|default(omit) }}"
     master_log_pos: "{{ repl_stat.Position|default(omit) }}"
   when:
-    - mysql_cluster_role == 'slave'
+    - mysql_cluster_role in ['slave','secondary']'
     - not slave.Is_Slave
     - mysql_replication_master|length > 0
 
@@ -35,7 +35,7 @@
   mysql_replication:
     mode: startslave
   when:
-    - mysql_cluster_role == 'slave'
+    - mysql_cluster_role in ['slave','secondary']'
     - not slave.Is_Slave
     - mysql_replication_master|length > 0
 
@@ -45,7 +45,7 @@
   register: ms_cluster_status
   no_log: yes
   when:
-    - mysql_cluster_role == 'slave'
+    - mysql_cluster_role in ['slave','secondary']'
   tags:
     - skip_ansible_lint
 
@@ -56,5 +56,5 @@
       - ms_cluster_status.Slave_SQL_Running == "Yes"
       - ms_cluster_status.Slave_IO_Running == "Yes"
   when:
-    - mysql_cluster_role == 'slave'
+    - mysql_cluster_role in ['slave','secondary']'
     - ms_cluster_status is not skipped

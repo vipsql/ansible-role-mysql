@@ -1,2 +1,2 @@
-mysql_cluster_role: slave
+mysql_cluster_role: secondary
 mysql_replication_master: mysql1

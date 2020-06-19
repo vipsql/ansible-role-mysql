@@ -19,7 +19,7 @@ mysql_max_connect_errors: 200
 ## mgr (Mysql Group Replication): 组复制
 ## ms (Master-Slave): 主从复制
 mysql_cluster_type: mgr
-mysql_cluster_role: master # slave
+mysql_cluster_role: primary # 可选值， primary/master, secondary/slave
 
 # Master/Slave
 mysql_replication_master: "" # master 主机的 inventory_hostname 名称
