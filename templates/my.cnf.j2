@@ -40,7 +40,7 @@ table_open_cache_instances                   = 16
 skip_name_resolve               = ON
 
 # 时区
-default_time_zone               = "{{ mysql_default_time_zome | default('+8:00') }}"
+default_time_zone               = "{{ mysql_default_time_zone | default('+8:00') }}"
 
 # INNODB 优化
 innodb_file_per_table           = 1  # 独立表空间

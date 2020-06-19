@@ -1,0 +1,9 @@
+---
+- name: Check mysql_root_password
+  assert:
+    that:
+      - mysql_root_password | length > 0
+      - mysql_repl_password | length > 0
+      - mysql_group_replication_name | length > 0
+  run_once: True
+  delegate_to: localhost

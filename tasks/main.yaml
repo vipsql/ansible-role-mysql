@@ -1,11 +1,12 @@
 ---
+- import_tasks: check_vars.yaml
 - import_tasks: prepare.yaml
 
 - name: Download mysql package
   get_url:
     url: "{{ mysql_download_url }}"
     dest: "{{ playbook_dir }}/files/{{ mysql_download_url | basename }}"
-    checksum: "md5:{{ mysql_download_url }}.md5"
+    # checksum: "md5:{{ mysql_download_url }}.md5"
     timeout: 300
   become: false
   run_once: true
@@ -170,11 +171,13 @@
     state: "{{ item.state | default(omit) }}"
     sql_log_bin: "{{ False if mysql_cluster_type == 'ms' and mysql_replication_based == 'binlog' else True  }}"
   run_once: "{{ False if mysql_cluster_type == 'ms' and mysql_replication_based == 'binlog' else True }}"
-  # no_log: yes
+  no_log: yes
   loop: "{{ mysql_users }}"
   when:
     - mysql_users|length > 0
     - "((mysql_cluster_type == 'mgr' or mysql_replication_based == 'gtid') and ('mysql_primary' in groups and inventory_hostname in groups['mysql_primary']) or ansible_play_hosts.index(inventory_hostname) == 0) or (mysql_cluster_type == 'ms' and mysql_replication_based == 'binlog')"
+  tags:
+    - molecule-idempotence-notest
 
 - name: Import Cleanup tasks
   import_tasks: cleanup.yaml
