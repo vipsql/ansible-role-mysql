@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.2.1](https://github.com/daixijun/ansible-role-mysql/compare/v2.2.0...v2.2.1) (2020-06-22)
+
+
+### Bug Fixes
+
+* 修复 vault 后 length 变量判断失败错误 ([6a6a092](https://github.com/daixijun/ansible-role-mysql/commit/6a6a09232a81a6655070f3cb0b79017ffc22f026))
+
 ## [2.2.0](https://github.com/daixijun/ansible-role-mysql/compare/v2.1.2...v2.2.0) (2020-06-22)
 
 
