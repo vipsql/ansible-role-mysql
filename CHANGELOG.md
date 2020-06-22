@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.2.0](https://github.com/daixijun/ansible-role-mysql/compare/v2.1.2...v2.2.0) (2020-06-22)
+
+
+### Features
+
+* mgr集群支持开启Innodb Cluster功能 ([abcf5d5](https://github.com/daixijun/ansible-role-mysql/commit/abcf5d51032b21b2d3839f66b45d988ae24d419e))
+
 ### [2.1.2](https://github.com/daixijun/ansible-role-mysql/compare/v2.1.1...v2.1.2) (2020-06-19)
 
 
