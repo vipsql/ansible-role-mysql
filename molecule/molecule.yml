@@ -50,5 +50,6 @@ provisioner:
   config_options:
     defaults:
       verbosity: 2
+      vault_password_file: ${MOLECULE_SCENARIO_DIRECTORY}/vault.pw
 verifier:
   name: ansible
