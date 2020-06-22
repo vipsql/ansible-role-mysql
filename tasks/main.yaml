@@ -144,6 +144,14 @@
   include_tasks: mysql_group_replication.yaml
   when: mysql_cluster_type == 'mgr'
 
+- name: Include mysql shell tasks
+  include_tasks: mysql_shell.yaml
+  run_once: True
+  when:
+    - mysql_cluster_type == 'mgr'
+    - mysql_innodb_cluster_enable|bool
+    - ('mysql_primary' in groups and inventory_hostname in groups['mysql_primary']) or ansible_play_hosts.index(inventory_hostname) == 0
+
 - name: Include Master-Slave tasks
   include_tasks: master_slave.yaml
   when: mysql_cluster_type == 'ms'

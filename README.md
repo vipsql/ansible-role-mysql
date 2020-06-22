@@ -32,8 +32,8 @@
 | mysql_default_time_zone                     | string     | +8:00                       | 指定时区                                                                                    |
 | mysql_character_set_server                  | string     | utf8mb4                     | 默认字符集                                                                                  |
 | mysql_collation_server                      | string     | utf8mb4_general_ci          | 默认字符序                                                                                  |
-| mysql_max_connections                       | string/int | 505                         | 最大连接数                                                                                  |
-| mysql_max_user_connections                  | string/int | 500                         | 用户最大连接数，必须比 `mysql_max_connections` 小，需要给管理员预留几个连接用于处理异常情况 |
+| mysql_max_connections                       | string/int | 1005                        | 最大连接数                                                                                  |
+| mysql_max_user_connections                  | string/int | 1000                        | 用户最大连接数，必须比 `mysql_max_connections` 小，需要给管理员预留几个连接用于处理异常情况 |
 | mysql_max_connect_errors                    | string/int | 200                         | 最大错误连接数                                                                              |
 | mysql_root_password                         | string     |                             | root账号的密码                                                                              |
 | mysql_cluster_type                          | string     | mgr                         | 集群类型(默认 mgr) 可选 `mgr`(Mysql Group Replication)/`ms`(Master-Slave)                   |
@@ -44,8 +44,12 @@
 | mysql_repl_password                         | string     |                             | 用于主从/组复制的账号的密码                                                                 |
 | mysql_group_replication_name                | uuid       |                             | 组复制集群名                                                                                |
 | mysql_group_replication_single_primary_mode | bool       | true                        | MGR集群是否为单主模式                                                                       |
-| mysql_databases                             | array      |                             | 需要创建的业务数据库                                                                        |
-| mysql_users                                 | array      |                             | 需要创建的用户                                                                              |
+| mysql_innodb_cluster_enable                 | bool       | true                        | 是否开启 Innodb Cluster                                                                     |
+| mysql_innodb_cluster_name                   | string     | default                     | Innodb Cluster 名称                                                                         |
+| mysql_innodb_cluster_username               | string     | ic                          | 用于创建和管理 Innodb Cluster 的账号，需要具备 `ALL WITH GRANT OPTION` 权限                 |
+| mysql_innodb_cluster_password               | string     | ""                          | 管理密码                                                                                    |
+| mysql_databases                             | array      | []                          | 需要创建的业务数据库                                                                        |
+| mysql_users                                 | array      | []                          | 需要创建的用户                                                                              |
 
 ## 依赖
 

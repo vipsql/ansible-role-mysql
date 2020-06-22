@@ -35,6 +35,12 @@ mysql_group_replication_name: "" # 通过 uuidgen 生成
 mysql_group_replication_single_primary_mode: true
 mysql_group_replication_ssl: false # `mysql_ssl_enable` 为 true 时有效，将与实例使用相同的证书
 
+# Innodb Cluster配置
+mysql_innodb_cluster_enable: true # 是否开启 Innodb Cluster
+mysql_innodb_cluster_name: "default" # Innodb Cluster 名称
+mysql_innodb_cluster_username: "ic" # 用于创建和管理 Innodb Cluster 的账号，需要具备 `ALL WITH GRANT OPTION` 权限
+mysql_innodb_cluster_password: "" # 管理密码
+
 mysql_databases: []
 # - name: db1
 # - name: db2

@@ -8,6 +8,9 @@
       mysql_group_replication_single_primary_mode: true
       mysql_root_password: ieng8Taibonga6dair0j
       mysql_repl_password: Ad5sa7aer7eiN3goo2be
+      mysql_innodb_cluster_enable: true
+      mysql_innodb_cluster_username: ic
+      mysql_innodb_cluster_password: ced6raboVa_nae0wu5pa
       mysql_group_replication_name: cdbdc06c-2023-4d20-9821-272f160ef4f6
       mysql_databases:
         - name: db1
@@ -15,7 +18,3 @@
         - name: monitor
           password: monitor
           priv: "sys.*:SELECT"
-        - name: ic
-          password: hai0AiV7chaig5pheo=Z
-          priv: "*.*:ALL,GRANT"
-          host: "%"

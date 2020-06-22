@@ -1,0 +1,11 @@
+var session = mysqlx.getSession("{{ mysql_innodb_cluster_username }}:{{ mysql_innodb_cluster_password }}@{{ ansible_default_ipv4.address }}:33060")
+shell.setSession(session)
+try {
+  var schema = session.getSchema("mysql_innodb_cluster_metadata")
+  print("InnoDB Cluster already created.")
+} catch(e) {
+  dba.createCluster("{{ mysql_innodb_cluster_name }}", {"adoptFromGR": true})
+  print("InnoDB Cluster create successful.")
+}
+// var cluster = dba.getCluster("{{ mysql_innodb_cluster_name }}")
+// print(cluster.status())
