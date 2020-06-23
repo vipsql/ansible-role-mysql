@@ -5,6 +5,7 @@
     dest: "{{ playbook_dir }}/files/mysql-shell-{{ mysql_version }}-1.el7.x86_64.rpm"
   run_once: True
   delegate_to: localhost
+  become: false
 
 - name: Copy mysql-shell package to target server
   copy:
