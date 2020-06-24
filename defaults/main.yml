@@ -41,6 +41,11 @@ mysql_innodb_cluster_name: "default" # Innodb Cluster 名称
 mysql_innodb_cluster_username: "ic" # 用于创建和管理 Innodb Cluster 的账号，需要具备 `ALL WITH GRANT OPTION` 权限
 mysql_innodb_cluster_password: "" # 管理密码
 
+# ProxySQL 相关配置
+mysql_proxysql_config: false
+mysql_proxysql_monitor_username: monitor
+mysql_proxysql_monitor_password: ""
+
 mysql_databases: []
 # - name: db1
 # - name: db2

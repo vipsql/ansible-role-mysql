@@ -60,6 +60,7 @@
     dest: /tmp/gr_member_routing_candidate_status.sql
   run_once: true
   when:
+    - mysql_proxysql_config|bool
     - ('mysql_primary' in groups and inventory_hostname in groups['mysql_primary']) or ansible_play_hosts.index(inventory_hostname) == 0
     - mysql_initialize_status is not skipped
 
@@ -68,8 +69,20 @@
   no_log: yes
   run_once: true
   when:
+    - mysql_proxysql_config|bool
     - ('mysql_primary' in groups and inventory_hostname in groups['mysql_primary']) or ansible_play_hosts.index(inventory_hostname) == 0
     - mysql_initialize_status is not skipped
+
+- name: Create proxysql monitor account
+  mysql_user:
+    name: "{{ mysql_proxysql_monitor_username }}"
+    password: "{{ mysql_proxysql_monitor_password }}"
+    host: "%"
+    priv: "sys.*:SELECT"
+    state: present
+  when:
+    - mysql_proxysql_config|bool
+    - ('mysql_primary' in groups and inventory_hostname in groups['mysql_primary']) or ansible_play_hosts.index(inventory_hostname) == 0
 
 - name: Show Group Replication status
   mysql_query:

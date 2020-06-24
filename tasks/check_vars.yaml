@@ -17,3 +17,12 @@
   when:
     - mysql_cluster_type == 'mgr'
     - mysql_innodb_cluster_enable|bool
+
+- name: Check mysql_proxysql_monitor_password
+  assert:
+    that:
+      - mysql_proxysql_monitor_password|string|length > 0
+  run_once: True
+  delegate_to: localhost
+  when:
+    - mysql_proxysql_config|bool
