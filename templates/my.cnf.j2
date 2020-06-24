@@ -52,7 +52,7 @@ innodb_flush_method             = O_DIRECT
 disabled_storage_engines        = "MyISAM,BLACKHOLE,FEDERATED,ARCHIVE"
 
 # Binary logging and Replication
-server_id                           = {{ ansible_play_hosts.index(inventory_hostname) + 1 }}
+server_id                           = {{ groups['mysql'].index(inventory_hostname) + 1 }}
 log_timestamps                      = system
 binlog-row-image                    = MINIMAL
 binlog-rows-query-log-events        = ON
@@ -133,12 +133,12 @@ loose-group_replication_start_on_boot                       = OFF
 loose-group_replication_bootstrap_group                     = OFF
 {% if mysql_interface %}
 loose-group_replication_local_address                       = "{{ hostvars[inventory_hostname]['ansible_'+mysql_interface].ipv4.address }}:33061"
-loose-group_replication_ip_whitelist                        = "{{ ansible_play_hosts | map('extract', hostvars, ['ansible_'+mysql_interface, 'ipv4', 'address']) | list | join(',') }}"
-loose-group_replication_group_seeds                         = "{{ ansible_play_hosts | map('extract', hostvars, ['ansible_'+mysql_interface, 'ipv4', 'address']) | map('regex_replace', '(.+)', '\\1:33061') | list | join(',') }}"
+loose-group_replication_ip_whitelist                        = "{{ groups['mysql'] | map('extract', hostvars, ['ansible_'+mysql_interface, 'ipv4', 'address']) | list | join(',') }}"
+loose-group_replication_group_seeds                         = "{{ groups['mysql'] | map('extract', hostvars, ['ansible_'+mysql_interface, 'ipv4', 'address']) | map('regex_replace', '(.+)', '\\1:33061') | list | join(',') }}"
 {% else %}
 loose-group_replication_local_address                       = "{{ ansible_default_ipv4.address }}:33061"
-loose-group_replication_ip_whitelist                        = "{{ ansible_play_hosts | map('extract', hostvars, ['ansible_default_ipv4', 'address']) | list | join(',') }}"
-loose-group_replication_group_seeds                         = "{{ ansible_play_hosts | map('extract', hostvars, ['ansible_default_ipv4', 'address']) | map('regex_replace', '(.+)', '\\1:33061') | list | join(',') }}"
+loose-group_replication_ip_whitelist                        = "{{ groups['mysql'] | map('extract', hostvars, ['ansible_default_ipv4', 'address']) | list | join(',') }}"
+loose-group_replication_group_seeds                         = "{{ groups['mysql'] | map('extract', hostvars, ['ansible_default_ipv4', 'address']) | map('regex_replace', '(.+)', '\\1:33061') | list | join(',') }}"
 {% endif %}
 loose-group_replication_recovery_retry_count                = 10
 loose-group_replication_recovery_reconnect_interval         = 60

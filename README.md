@@ -48,6 +48,9 @@
 | mysql_innodb_cluster_name                   | string     | default                     | Innodb Cluster 名称                                                                         |
 | mysql_innodb_cluster_username               | string     | ic                          | 用于创建和管理 Innodb Cluster 的账号，需要具备 `ALL WITH GRANT OPTION` 权限                 |
 | mysql_innodb_cluster_password               | string     | ""                          | 管理密码                                                                                    |
+| mysql_proxysql_config                       | bool       | false                       | 是否使用 proysql 做为代理层                                                                 |
+| mysql_proxysql_monitor_username             | string     | monitor                     | proxysql 监控mgr状态的账号                                                                  |
+| mysql_proxysql_monitor_password             | string     | ""                          | proxysql 监控mgr状态的密码                                                                  |
 | mysql_databases                             | array      | []                          | 需要创建的业务数据库                                                                        |
 | mysql_users                                 | array      | []                          | 需要创建的用户                                                                              |
 

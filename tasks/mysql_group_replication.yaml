@@ -65,8 +65,13 @@
     - mysql_initialize_status is not skipped
 
 - name: Create internal view sys.gr_member_routing_candidate_status for monitoring
-  shell: /usr/local/mysql/bin/mysql -uroot -p'{{ mysql_root_password }}' --socket={{ mysql_socket }} < /tmp/gr_member_routing_candidate_status.sql
-  no_log: yes
+  mysql_db:
+    name: all
+    target: /tmp/gr_member_routing_candidate_status.sql
+    state: import
+  # no_log: yes
+  environment:
+    PATH: /usr/local/mysql/bin:{{ ansible_env.PATH }}
   run_once: true
   when:
     - mysql_proxysql_config|bool
