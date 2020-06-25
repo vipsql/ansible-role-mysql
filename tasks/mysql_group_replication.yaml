@@ -1,30 +1,31 @@
 ---
-- name: Verify that cluster status
-  mysql_query:
-    query: SELECT member_state FROM performance_schema.replication_group_members WHERE member_id=@@server_uuid
-  register: _cluster_status
+- name: Check the group replication status
+  community.general.mysql_query:
+    query: SELECT service_state FROM performance_schema.replication_connection_status WHERE channel_name='group_replication_applier'
+  register: group_replication_status
 
-- name: Change master for channel
-  mysql_replication:
+- name: Change master for group replication channel
+  community.general.mysql_replication:
     mode: changemaster
     master_user: repl
     master_password: "{{ mysql_repl_password }}"
     channel: group_replication_recovery
   when:
-    - _cluster_status.rowcount[0]|int == 0
+    - group_replication_status.rowcount[0]|int == 0
+    # - group_replication_status.query_result[0][0]['service_state'] != 'ON'
 
-- name: Verify that the primary node status
-  mysql_query:
-    query: SELECT * FROM performance_schema.replication_group_members where member_role='PRIMARY'
-  run_once: true
-  register: mysql_mgr_primary_status
-  when:
-    - ('mysql_primary' in groups and inventory_hostname in groups['mysql_primary']) or ansible_play_hosts.index(inventory_hostname) == 0
-  tags:
-    - skip_ansible_lint
+# - name: Verify that the primary node status
+#   mysql_query:
+#     query: SELECT * FROM performance_schema.replication_group_members where member_role='PRIMARY'
+#   run_once: true
+#   register: mysql_mgr_primary_status
+#   when:
+#     - ('mysql_primary' in groups and inventory_hostname in groups['mysql_primary']) or ansible_play_hosts.index(inventory_hostname) == 0
+#   tags:
+#     - skip_ansible_lint
 
-- name: Initializing MGR cluster
-  mysql_query:
+- name: Bootstrap group replication on first primary node
+  community.general.mysql_query:
     query:
       - "SET GLOBAL group_replication_bootstrap_group=ON;"
       - "START GROUP_REPLICATION;"
@@ -32,25 +33,27 @@
   run_once: true
   when:
     - ('mysql_primary' in groups and inventory_hostname in groups['mysql_primary']) or ansible_play_hosts.index(inventory_hostname) == 0
-    - mysql_mgr_primary_status.rowcount[0]|int == 0
+    - group_replication_status.rowcount[0]|int == 0
+    # - group_replication_status.query_result[0][0]['service_state'] != 'ON'
   tags:
     - skip_ansible_lint
 
-- name: Verify that the member nodes status
-  mysql_query:
-    query: SELECT member_state FROM performance_schema.replication_group_members where member_id=@@server_uuid
-  register: mysql_mgr_member_status
-  when:
-    - ('mysql_secondary' in groups and inventory_hostname in groups['mysql_secondary']) or ansible_play_hosts.index(inventory_hostname) != 0
-  tags:
-    - skip_ansible_lint
+# - name: Verify that the member nodes status
+#   mysql_query:
+#     query: SELECT member_state FROM performance_schema.replication_group_members where member_id=@@server_uuid
+#   register: mysql_mgr_member_status
+#   when:
+#     - ('mysql_secondary' in groups and inventory_hostname in groups['mysql_secondary']) or ansible_play_hosts.index(inventory_hostname) != 0
+#   tags:
+#     - skip_ansible_lint
 
-- name: Startting MGR cluster member nodes
-  mysql_query:
+- name: Startting group replication member nodes
+  community.general.mysql_query:
     query: "START GROUP_REPLICATION;"
   when:
     - ('mysql_secondary' in groups and inventory_hostname in groups['mysql_secondary']) or ansible_play_hosts.index(inventory_hostname) != 0
-    - mysql_mgr_member_status.rowcount[0]|int == 0 or mysql_mgr_member_status.query_result[0][0].member_state != 'ONLINE'
+    - group_replication_status.rowcount[0]|int == 0
+    # - group_replication_status.query_result[0][0]['service_state'] != 'ON'
   tags:
     - skip_ansible_lint
 
@@ -65,7 +68,7 @@
     - mysql_initialize_status is not skipped
 
 - name: Create internal view sys.gr_member_routing_candidate_status for monitoring
-  mysql_db:
+  community.general.mysql_db:
     name: all
     target: /tmp/gr_member_routing_candidate_status.sql
     state: import
@@ -79,7 +82,7 @@
     - mysql_initialize_status is not skipped
 
 - name: Create proxysql monitor account
-  mysql_user:
+  community.general.mysql_user:
     name: "{{ mysql_proxysql_monitor_username }}"
     password: "{{ mysql_proxysql_monitor_password }}"
     host: "%"
@@ -90,6 +93,6 @@
     - ('mysql_primary' in groups and inventory_hostname in groups['mysql_primary']) or ansible_play_hosts.index(inventory_hostname) == 0
 
 - name: Show Group Replication status
-  mysql_query:
+  community.general.mysql_query:
     query: SELECT * FROM performance_schema.replication_group_members
   run_once: True

@@ -2,6 +2,8 @@
 - name: Converge
   hosts: all
   any_errors_fatal: yes
+  collections:
+    - community.general
   roles:
     - role: daixijun.mysql
       mysql_group_replication_single_primary_mode: false
@@ -32,8 +34,6 @@
         3433306665663464640a633262656437383563343432306635313831393563363738356139643433
         31663838306332356239616131343262393065303862356530333035353337333337
       mysql_group_replication_name: cdbdc06c-2023-4d20-9821-272f160ef4f6
-      mysql_proxysql_monitor_username: monitor
-      mysql_proxysql_monitor_password: bive3ekoo6Oov1ayo-th
       mysql_databases:
         - name: db1
       # mysql_users:

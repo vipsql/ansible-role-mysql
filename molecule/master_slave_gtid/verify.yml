@@ -32,7 +32,7 @@
           - socket_stat.stat.gr_name == "mysql"
 
     - name: Gathers information about MySQL servers
-      mysql_info:
+      community.general.mysql_info:
         filter:
           - "!databases"
           - "!settings"
@@ -68,7 +68,7 @@
           - "'monitor' in _info.users['%']"
 
     - name: Show databases
-      mysql_query:
+      community.general.mysql_query:
         query: SHOW DATABASES
       register: _res
       vars:

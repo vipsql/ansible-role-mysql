@@ -56,13 +56,16 @@
 
 ## 依赖
 
-无
+collections:
+
+* [community.general](https://github.com/ansible-collections/community.general)
 
 ## 示例
 
 安装
 
 ```shell
+ansible-galaxy collection install -r requirements.yml
 ansible-galaxy install daixijun.mysql
 ```
 
@@ -70,6 +73,8 @@ ansible-galaxy install daixijun.mysql
 
 ```yaml
 - hosts: servers
+  collections:
+    - community.general
   roles:
     - { role: daixijun.mysql, mysql_version: 8.0.17 }
 ```
@@ -85,10 +90,6 @@ BSD
 ## 待办
 
 * [ ] 主从模式下支持半同步复制
-
-## 注意事项
-
-* mysql_user/mysql_replication/mysql_query 这几个模块有做定制化，与官方有点差异
 
 ## 维护者
 

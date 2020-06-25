@@ -2,6 +2,8 @@
 - name: Converge
   hosts: all
   any_errors_fatal: yes
+  collections:
+    - community.general
   roles:
     - role: daixijun.mysql
       mysql_cluster_type: ms

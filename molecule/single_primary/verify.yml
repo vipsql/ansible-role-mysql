@@ -32,7 +32,7 @@
           - socket_stat.stat.gr_name == "mysql"
 
     - name: Gathers information about MySQL servers
-      mysql_info:
+      community.general.mysql_info:
         filter:
           - users
       no_log: True
@@ -45,7 +45,7 @@
           - "'ic' in _info.users['%']"
 
     - name: Show databases
-      mysql_query:
+      community.general.mysql_query:
         query: SHOW DATABASES
       register: _res
       vars:
@@ -54,7 +54,7 @@
       failed_when: database not in _res.query_result[0]
 
     - name: Query replication group members
-      mysql_query:
+      community.general.mysql_query:
         query: SELECT * FROM performance_schema.replication_group_members WHERE MEMBER_STATE = 'ONLINE'
       register: _mgr_res
       failed_when: _mgr_res.rowcount[0] != groups['mysql'] | length

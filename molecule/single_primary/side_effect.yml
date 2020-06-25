@@ -3,7 +3,7 @@
   gather_facts: False
   tasks:
     - name: Restart Primary
-      mysql_query:
+      community.general.mysql_query:
         query: "{{ item }}"
       loop:
         - STOP GROUP_REPLICATION

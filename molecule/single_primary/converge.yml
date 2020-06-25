@@ -2,6 +2,8 @@
 - name: Converge
   hosts: all
   any_errors_fatal: yes
+  collections:
+    - community.general
   roles:
     - role: daixijun.mysql
       mysql_version: 8.0.20

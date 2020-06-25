@@ -18,7 +18,7 @@
     state: present
 
 - name: Create Innodb Cluster admin user
-  mysql_user:
+  community.general.mysql_user:
     name: "{{ mysql_innodb_cluster_username }}"
     host: "%"
     password: "{{ mysql_innodb_cluster_password }}"

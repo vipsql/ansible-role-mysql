@@ -104,10 +104,11 @@
   no_log: yes
 
 - name: Update root password
-  mysql_user:
+  community.general.mysql_user:
     name: root
     host_all: true
     password: "{{ mysql_root_password }}"
+    check_implicit_admin: yes
     login_user: root
     login_unix_socket: "{{ mysql_socket }}"
     sql_log_bin: false
@@ -125,14 +126,14 @@
   no_log: True
 
 - name: Removes all anonymous user accounts
-  mysql_user:
+  community.general.mysql_user:
     name: ""
     host_all: yes
     sql_log_bin: false
     state: absent
 
 - name: Ensure replication user
-  mysql_user:
+  community.general.mysql_user:
     name: "{{ mysql_repl_user | default('repl') }}"
     host: "%"
     password: "{{ mysql_repl_password }}"
@@ -157,7 +158,7 @@
   when: mysql_cluster_type == 'ms'
 
 - name: Ensure business databases
-  mysql_db:
+  community.general.mysql_db:
     name: "{{ item.name }}"
     state: "{{ item.state | default('present') }}"
   run_once: true
@@ -169,7 +170,7 @@
 # FIXME(@daixijun): 模块对于mysql8.0以上的版本，给用户授权`ALL`权限的时候会出现幂等性问题
 # 临时的解决方案是强制设置为 `changed_when: false`
 - name: Ensure business users
-  mysql_user:
+  community.general.mysql_user:
     name: "{{ item.name }}"
     host: "{{ item.host | default('%') }}"
     password: "{{ item.password }}"
