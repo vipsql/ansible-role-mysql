@@ -1,9 +1,9 @@
 ---
 dependency:
   name: galaxy
-  options:
-    role-file: molecule/requirements.yml
-    requirements-file: molecule/requirements.yml
+  # options:
+  #   role-file: molecule/requirements.yml
+  #   requirements-file: molecule/requirements.yml
 driver:
   name: docker
 lint: |
@@ -48,8 +48,8 @@ platforms:
       - mysql_secondary
 provisioner:
   name: ansible
-  env:
-    ANSIBLE_COLLECTIONS_PATHS: /home/runner/.cache/molecule/ansible-role-mysql/${MOLECULE_SCENARIO}/collections:~/.cache/molecule/daixijun.mysql/${MOLECULE_SCENARIO}/collections:~/.ansible/collections:/usr/share/ansible/collections
+  # env:
+  #   ANSIBLE_COLLECTIONS_PATHS: /home/runner/.cache/molecule/ansible-role-mysql/${MOLECULE_SCENARIO}/collections:~/.cache/molecule/daixijun.mysql/${MOLECULE_SCENARIO}/collections:~/.ansible/collections:/usr/share/ansible/collections
   ansible_args:
     - "--extra-vars=mysql_version=${MYSQL_VERSION:-8.0.20}"
   config_options:
