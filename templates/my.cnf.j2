@@ -72,7 +72,7 @@ replicate-ignore-db                 = information_schema
 replicate-ignore-db                 = performance_schema
 replicate-ignore-db                 = sys
 {% endif %}
-{% if mysql_cluster_type == 'ms' and mysql_cluster_role == 'slave' %}
+{% if mysql_cluster_type == 'ms' and mysql_cluster_role in ['slave','secondary'] %}
 relay-log                           = relay-bin
 relay-log-index                     = relay-bin-index
 read_only                           = 1  # slave 普通用户只读模式
