@@ -48,14 +48,14 @@ platforms:
       - mysql_secondary
 provisioner:
   name: ansible
-  # env:
-  #   ANSIBLE_COLLECTIONS_PATHS: /home/runner/.cache/molecule/ansible-role-mysql/${MOLECULE_SCENARIO}/collections:~/.cache/molecule/daixijun.mysql/${MOLECULE_SCENARIO}/collections:~/.ansible/collections:/usr/share/ansible/collections
+  env:
+    ANSIBLE_COLLECTIONS_PATHS: /home/runner/.ansible/collections:~/.ansible/collections:/usr/share/ansible/collections
   ansible_args:
     - "--extra-vars=mysql_version=${MYSQL_VERSION:-8.0.20}"
   config_options:
     defaults:
       verbosity: 2
       vault_password_file: ${MOLECULE_SCENARIO_DIRECTORY}/vault.pw
-      # collections_paths: ~/.cache/molecule/daixijun.mysql/${MOLECULE_SCENARIO}/collections:~/.ansible/collections:/usr/share/ansible/collections
+      collections_paths: /home/runner/.ansible/collections:~/.ansible/collections:/usr/share/ansible/collections
 verifier:
   name: ansible
