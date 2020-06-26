@@ -49,7 +49,7 @@ platforms:
 provisioner:
   name: ansible
   env:
-    ANSIBLE_COLLECTIONS_PATHS: ~/.cache/molecule/daixijun.mysql/${MOLECULE_SCENARIO}/collections:~/.ansible/collections:/usr/share/ansible/collections
+    ANSIBLE_COLLECTIONS_PATHS: /home/runner/.cache/molecule/ansible-role-mysql/${MOLECULE_SCENARIO}/collections:~/.cache/molecule/daixijun.mysql/${MOLECULE_SCENARIO}/collections:~/.ansible/collections:/usr/share/ansible/collections
   ansible_args:
     - "--extra-vars=mysql_version=${MYSQL_VERSION:-8.0.20}"
   config_options:
