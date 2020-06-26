@@ -13,8 +13,8 @@
       mysql_group_replication_name: cdbdc06c-2023-4d20-9821-272f160ef4f6
       mysql_databases:
         - name: db1
-      mysql_users:
-        - name: monitor
-          password: monitor
-          priv: "sys.*:SELECT"
-          require_ssl: true
+      # mysql_users:
+      #   - name: monitor
+      #     password: monitor
+      #     priv: "sys.*:SELECT"
+      #     require_ssl: true
