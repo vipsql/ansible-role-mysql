@@ -43,7 +43,7 @@ jobs:
           MYSQL_VERSION: ${{ matrix.mysql-version }}
         run: |
           cd ..
-          ln -sf ansible-role-mysql daixijun.mysql
+          cp -rfvp ansible-role-mysql daixijun.mysql
           cd daixijun.mysql
           molecule test --scenario-name ${{ matrix.scenario }}
       - name: Publish role to Galaxy
