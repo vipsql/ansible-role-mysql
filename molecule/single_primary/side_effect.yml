@@ -9,4 +9,4 @@
         - STOP GROUP_REPLICATION
         - START GROUP_REPLICATION
       when:
-        - ('mysql_primary' in groups and inventory_hostname in groups['mysql_primary']) or ansible_play_hosts.index(inventory_hostname) == 0
+        - ('mysql_primary' in groups and inventory_hostname in groups['mysql_primary']) or groups['mysql'].index(inventory_hostname) == 0

@@ -151,7 +151,7 @@
   when:
     - mysql_cluster_type == 'mgr'
     - mysql_innodb_cluster_enable|bool
-    - ('mysql_primary' in groups and inventory_hostname in groups['mysql_primary']) or ansible_play_hosts.index(inventory_hostname) == 0
+    - ('mysql_primary' in groups and inventory_hostname in groups['mysql_primary']) or groups['mysql'].index(inventory_hostname) == 0
 
 - name: Include Master-Slave tasks
   include_tasks: master_slave.yaml
@@ -168,7 +168,7 @@
   loop: "{{ mysql_databases }}"
   when:
     - mysql_databases|length > 0
-    - "('mysql_primary' in groups and inventory_hostname in groups['mysql_primary']) or ansible_play_hosts.index(inventory_hostname) == 0"
+    - "('mysql_primary' in groups and inventory_hostname in groups['mysql_primary']) or groups['mysql'].index(inventory_hostname) == 0"
 
 - name: Show tables from database
   community.general.mysql_query:
@@ -179,7 +179,7 @@
   loop: "{{ mysql_databases }}"
   when:
     - mysql_databases|length > 0
-    - "('mysql_primary' in groups and inventory_hostname in groups['mysql_primary']) or ansible_play_hosts.index(inventory_hostname) == 0"
+    - "('mysql_primary' in groups and inventory_hostname in groups['mysql_primary']) or groups['mysql'].index(inventory_hostname) == 0"
     - item.datafile is defined
 
 - name: Copy data file to target machine
@@ -190,7 +190,7 @@
   loop: "{{ _show_tables.results }}"
   when:
     - _show_tables.results|length > 0
-    - "('mysql_primary' in groups and inventory_hostname in groups['mysql_primary']) or ansible_play_hosts.index(inventory_hostname) == 0"
+    - "('mysql_primary' in groups and inventory_hostname in groups['mysql_primary']) or groups['mysql'].index(inventory_hostname) == 0"
     - item.rowcount[0]|int == 0
 
 - name: Import data file
@@ -204,7 +204,7 @@
   loop: "{{ _show_tables.results }}"
   when:
     - _show_tables.results|length > 0
-    - "('mysql_primary' in groups and inventory_hostname in groups['mysql_primary']) or ansible_play_hosts.index(inventory_hostname) == 0"
+    - "('mysql_primary' in groups and inventory_hostname in groups['mysql_primary']) or groups['mysql'].index(inventory_hostname) == 0"
     - item.rowcount[0]|int == 0
 
 - name: Remove data file
@@ -215,7 +215,7 @@
   loop: "{{ _show_tables.results }}"
   when:
     - _show_tables.results|length > 0
-    - "('mysql_primary' in groups and inventory_hostname in groups['mysql_primary']) or ansible_play_hosts.index(inventory_hostname) == 0"
+    - "('mysql_primary' in groups and inventory_hostname in groups['mysql_primary']) or groups['mysql'].index(inventory_hostname) == 0"
     - item.rowcount[0]|int == 0
 
 - name: Ensure business users
@@ -238,7 +238,7 @@
   loop: "{{ mysql_users }}"
   when:
     - mysql_users|length > 0
-    - "((mysql_cluster_type == 'mgr' or mysql_replication_based == 'gtid') and ('mysql_primary' in groups and inventory_hostname in groups['mysql_primary']) or ansible_play_hosts.index(inventory_hostname) == 0) or (mysql_cluster_type == 'ms' and mysql_replication_based == 'binlog')"
+    - "((mysql_cluster_type == 'mgr' or mysql_replication_based == 'gtid') and ('mysql_primary' in groups and inventory_hostname in groups['mysql_primary']) or groups['mysql'].index(inventory_hostname) == 0) or (mysql_cluster_type == 'ms' and mysql_replication_based == 'binlog')"
   tags:
     - molecule-idempotence-notest
 
