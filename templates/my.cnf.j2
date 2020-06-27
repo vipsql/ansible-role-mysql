@@ -128,7 +128,7 @@ plugin-load-add                              = mysql_clone.so        # 加载clo
 # Mysql Group Replication
 plugin-load                                                 = group_replication.so
 transaction_write_set_extraction                            = XXHASH64
-loose-group_replication_group_name                          = "{{ mysql_group_replication_name }}" # 可在库里使用SELECT UUID()生成，一个组的所有机器都相同。
+loose-group_replication_group_name                          = "{{ mysql_group_replication_name | lower }}" # 可在库里使用SELECT UUID()生成，一个组的所有机器都相同。
 loose-group_replication_start_on_boot                       = OFF
 loose-group_replication_bootstrap_group                     = OFF
 {% if mysql_interface %}
