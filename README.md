@@ -22,7 +22,7 @@
 
 | 变量名                                      | 类型       | 默认值                      | 变量说明                                                                                    |
 | ------------------------------------------- | ---------- | --------------------------- | ------------------------------------------------------------------------------------------- |
-| mysql_version                               | string     | 8.0.17                      | mysql 版本                                                                                  |
+| mysql_version                               | string     | 8.0.20                      | mysql 版本                                                                                  |
 | mysql_download_url                          | string     |                             | 免安装压缩包下载地址                                                                        |
 | mysql_datadir                               | string     | /data/mysql                 |                                                                                             | 数据存放目录                               |
 | mysql_logdir                                | string     | /var/log/mysqld             | 日志存放目录                                                                                |
@@ -44,7 +44,7 @@
 | mysql_replication_based                     | string     | gtid                        | 可选基于 `gtid` 或传统 `binlog` 方式进行复制(默认 gtid)                                     |
 | mysql_repl_user                             | string     | repl                        | 用于主从/组复制的账号                                                                       |
 | mysql_repl_password                         | string     |                             | 用于主从/组复制的账号的密码                                                                 |
-| mysql_group_replication_name                | uuid       |                             | 组复制集群名                                                                                |
+| mysql_group_replication_name                | uuid       |                             | 组复制集群名,在mysql中使用`SELECT UUID()`或shell中使用`uuidgen`生成                         |
 | mysql_group_replication_single_primary_mode | bool       | true                        | MGR集群是否为单主模式                                                                       |
 | mysql_innodb_cluster_enable                 | bool       | true                        | 是否开启 Innodb Cluster                                                                     |
 | mysql_innodb_cluster_name                   | string     | default                     | Innodb Cluster 名称                                                                         |
