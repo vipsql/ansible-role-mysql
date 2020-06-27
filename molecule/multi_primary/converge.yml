@@ -36,7 +36,7 @@
       mysql_group_replication_name: cdbdc06c-2023-4d20-9821-272f160ef4f6
       mysql_databases:
         - name: db1
-      # mysql_users:
-      #   - name: monitor
-      #     password: monitor
-      #     priv: "sys.*:SELECT"
+      mysql_users:
+        - name: user1
+          password: Ang4eij~aiSh4lu4tho5
+          priv: "db1.*:ALL"

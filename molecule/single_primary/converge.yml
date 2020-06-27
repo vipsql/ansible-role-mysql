@@ -40,7 +40,7 @@
       mysql_proxysql_monitor_password: bive3ekoo6Oov1ayo-th
       mysql_databases:
         - name: db1
-      # mysql_users:
-      #   - name: monitor
-      #     password: monitor
-      #     priv: "sys.*:SELECT"
+      mysql_users:
+        - name: user1
+          password: Ang4eij~aiSh4lu4tho5
+          priv: "db1.*:ALL"

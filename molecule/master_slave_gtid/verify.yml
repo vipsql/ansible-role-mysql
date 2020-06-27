@@ -62,10 +62,10 @@
       when:
         - "('mysql_secondary' in groups and inventory_hostname in groups['mysql_secondary']) or ansible_play_hosts.index(inventory_hostname) > 0"
 
-    # - name: Assert that users
-    #   assert:
-    #     that:
-    #       - "'monitor' in _info.users['%']"
+    - name: Assert that users
+      assert:
+        that:
+          - "'user1' in _info.users['%']"
 
     - name: Show databases
       community.general.mysql_query:

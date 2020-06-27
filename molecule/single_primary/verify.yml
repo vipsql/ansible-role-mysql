@@ -43,6 +43,7 @@
         that:
           - "'monitor' in _info.users['%']"
           - "'ic' in _info.users['%']"
+          - "'user1' in _info.users['%']"
 
     - name: Show databases
       community.general.mysql_query:

@@ -31,18 +31,17 @@
           - socket_stat.stat.pw_name == "mysql"
           - socket_stat.stat.gr_name == "mysql"
 
-    # - name: Gathers information about MySQL servers
-    #   community.general.mysql_info:
-    #     filter:
-    #       - users
-    #   no_log: True
-    #   register: _info
+    - name: Gathers information about MySQL servers
+      community.general.mysql_info:
+        filter:
+          - users
+      no_log: True
+      register: _info
 
-    # - name: Assert that users
-    #   assert:
-    #     that:
-    #       - "'monitor' in _info.users['%']"
-    #       - "'ic' in _info.users['%']"
+    - name: Assert that users
+      assert:
+        that:
+          - "'user1' in _info.users['%']"
 
     - name: Show databases
       community.general.mysql_query:
