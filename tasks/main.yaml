@@ -189,9 +189,8 @@
   run_once: true
   loop: "{{ _show_tables.results }}"
   when:
-    - _show_tables.results|length > 0
     - "('mysql_primary' in groups and inventory_hostname in groups['mysql_primary']) or groups['mysql'].index(inventory_hostname) == 0"
-    - item.rowcount[0]|int == 0
+    - not item.skipped and item.rowcount[0]|int == 0
 
 - name: Import data file
   community.general.mysql_db:
@@ -203,9 +202,8 @@
   run_once: true
   loop: "{{ _show_tables.results }}"
   when:
-    - _show_tables.results|length > 0
     - "('mysql_primary' in groups and inventory_hostname in groups['mysql_primary']) or groups['mysql'].index(inventory_hostname) == 0"
-    - item.rowcount[0]|int == 0
+    - not item.skipped and item.rowcount[0]|int == 0
 
 - name: Remove data file
   file:
@@ -214,9 +212,8 @@
   run_once: true
   loop: "{{ _show_tables.results }}"
   when:
-    - _show_tables.results|length > 0
     - "('mysql_primary' in groups and inventory_hostname in groups['mysql_primary']) or groups['mysql'].index(inventory_hostname) == 0"
-    - item.rowcount[0]|int == 0
+    - not item.skipped and item.rowcount[0]|int == 0
 
 - name: Ensure business users
   community.general.mysql_user:
