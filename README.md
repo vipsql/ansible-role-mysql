@@ -28,6 +28,8 @@
 | mysql_logdir                                | string     | /var/log/mysqld             | 日志存放目录                                                                                |
 | mysql_pidfile                               | string     | /var/run/mysqld/mysqld.pid  | PID文件位置                                                                                 |
 | mysql_socket                                | string     | /var/run/mysqld/mysqld.sock | Socket文件位置                                                                              |
+| mysql_port                                  | int        | 3306                        | 监听端口                                                                                    |
+| mysql_bind_address                          | string     | 0.0.0.0                     | 监听地址                                                                                    |
 | mysql_interface                             | string     |                             | 指定网卡，默认使用除lo外的第一张网卡                                                        |
 | mysql_default_time_zone                     | string     | +8:00                       | 指定时区                                                                                    |
 | mysql_character_set_server                  | string     | utf8mb4                     | 默认字符集                                                                                  |
@@ -76,7 +78,7 @@ ansible-galaxy install daixijun.mysql
   collections:
     - community.general
   roles:
-    - { role: daixijun.mysql, mysql_version: 8.0.17 }
+    - { role: daixijun.mysql, mysql_version: 8.0.20 }
 ```
 
 ## License
@@ -86,6 +88,7 @@ BSD
 ## 已知问题
 
 * [ ] mysql_user 模块对于mysql8.0以上的版本，给用户授权`ALL`权限的时候会出现幂等性问题 [Idempotence all grant](https://github.com/ansible/ansible/pull/57460)
+* [ ] 目前配置文件有改动时，重启mysql服务后可能会造成集群异常
 
 ## 待办
 
