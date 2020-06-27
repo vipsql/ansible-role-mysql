@@ -160,6 +160,9 @@
 - name: Ensure business databases
   community.general.mysql_db:
     name: "{{ item.name }}"
+    collation: "{{ item.collation | default('utf8mb4_general_ci') }}"
+    encoding: "{{ item.encoding | default('utf8mb4') }}"
+    single_transaction: "{{ item.single_transaction | default(omit) }}"
     state: "{{ item.state | default('present') }}"
   run_once: true
   loop: "{{ mysql_databases }}"
@@ -167,8 +170,6 @@
     - mysql_databases|length > 0
     - "('mysql_primary' in groups and inventory_hostname in groups['mysql_primary']) or ansible_play_hosts.index(inventory_hostname) == 0"
 
-# FIXME(@daixijun): 模块对于mysql8.0以上的版本，给用户授权`ALL`权限的时候会出现幂等性问题
-# 临时的解决方案是强制设置为 `changed_when: false`
 - name: Ensure business users
   community.general.mysql_user:
     name: "{{ item.name }}"
@@ -176,7 +177,6 @@
     password: "{{ item.password }}"
     encrypted: "{{ item.encrypted | default(omit) }}"
     priv: "{{ item.priv | default(omit) }}"
-    require_ssl: "{{ item.require_ssl | default(omit) }}"
     state: "{{ item.state | default(omit) }}"
     sql_log_bin: "{{ False if mysql_cluster_type == 'ms' and mysql_replication_based == 'binlog' else True  }}"
   run_once: "{{ False if mysql_cluster_type == 'ms' and mysql_replication_based == 'binlog' else True }}"
