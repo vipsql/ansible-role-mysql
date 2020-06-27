@@ -170,13 +170,67 @@
     - mysql_databases|length > 0
     - "('mysql_primary' in groups and inventory_hostname in groups['mysql_primary']) or ansible_play_hosts.index(inventory_hostname) == 0"
 
+- name: Show tables from database
+  community.general.mysql_query:
+    login_db: "{{ item.name }}"
+    query: "SHOW TABLES"
+  run_once: true
+  register: _show_tables
+  loop: "{{ mysql_databases }}"
+  when:
+    - mysql_databases|length > 0
+    - "('mysql_primary' in groups and inventory_hostname in groups['mysql_primary']) or ansible_play_hosts.index(inventory_hostname) == 0"
+    - item.datafile is defined
+
+- name: Copy data file to target machine
+  copy:
+    src: "{{ item.item.datafile }}"
+    dest: "/tmp/{{ item.item.datafile | basename }}"
+  run_once: true
+  loop: "{{ _show_tables.results }}"
+  when:
+    - _show_tables.results|length > 0
+    - "('mysql_primary' in groups and inventory_hostname in groups['mysql_primary']) or ansible_play_hosts.index(inventory_hostname) == 0"
+    - item.rowcount[0]|int == 0
+
+- name: Import data file
+  community.general.mysql_db:
+    name: "{{ item.item.name }}"
+    target: "/tmp/{{ item.item.datafile | basename }}"
+    state: import
+  environment:
+    PATH: "/usr/local/mysql/bin:{{ ansible_env.PATH }}"
+  run_once: true
+  loop: "{{ _show_tables.results }}"
+  when:
+    - _show_tables.results|length > 0
+    - "('mysql_primary' in groups and inventory_hostname in groups['mysql_primary']) or ansible_play_hosts.index(inventory_hostname) == 0"
+    - item.rowcount[0]|int == 0
+
+- name: Remove data file
+  file:
+    path: "/tmp/{{ item.item.datafile | basename }}"
+    state: absent
+  run_once: true
+  loop: "{{ _show_tables.results }}"
+  when:
+    - _show_tables.results|length > 0
+    - "('mysql_primary' in groups and inventory_hostname in groups['mysql_primary']) or ansible_play_hosts.index(inventory_hostname) == 0"
+    - item.rowcount[0]|int == 0
+
 - name: Ensure business users
   community.general.mysql_user:
     name: "{{ item.name }}"
     host: "{{ item.host | default('%') }}"
-    password: "{{ item.password }}"
+    password: "{{ item.password | default(omit) }}"
     encrypted: "{{ item.encrypted | default(omit) }}"
     priv: "{{ item.priv | default(omit) }}"
+    append_privs: "{{ item.append_privs | default(omit) }}"
+    update_password: "{{ item.update_password | default(omit) }}"
+    plugin: "{{ item.plugin | default(omit) }}"
+    plugin_hash_string: "{{ item.plugin_hash_string | default(omit) }}"
+    plugin_auth_string: "{{ item.plugin_auth_string | default(omit) }}"
+    resource_limits: "{{ item.resource_limits | default(omit) }}"
     state: "{{ item.state | default(omit) }}"
     sql_log_bin: "{{ False if mysql_cluster_type == 'ms' and mysql_replication_based == 'binlog' else True  }}"
   run_once: "{{ False if mysql_cluster_type == 'ms' and mysql_replication_based == 'binlog' else True }}"

@@ -51,9 +51,11 @@ mysql_proxysql_monitor_password: ""
 
 mysql_databases: []
 # - name: db1
-# - name: db2
-
+#   encoding: utf8mb4
+#   collation: utf8mb4_general_ci
+#   datafile: db1.sql
 mysql_users: []
 # - name: username
 #   host: '%'
+#   password: secret
 #   priv: 'db1.*:ALL'
