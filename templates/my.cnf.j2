@@ -1,8 +1,8 @@
 # {{ ansible_managed }}
 [mysqld]
 # Connection and Thread variables
-port                            = 3306
-bind_address                    = 0.0.0.0
+port                            = {{ mysql_port }}
+bind_address                    = {{ mysql_bind_address }}
 
 pid_file                        = {{ mysql_pidfile }}
 socket                          = {{ mysql_socket }}
@@ -17,7 +17,7 @@ collation_server                = {{ mysql_collation_server }}
 max_connections                 = {{ mysql_max_connections }}  # 总最大连接数，预留5个用于紧急情况下备用
 max_user_connections            = {{ mysql_max_user_connections }}  # 最大用户连接数
 max_connect_errors              = {{ mysql_max_connect_errors }}
-max_allowed_packet              = 16M
+max_allowed_packet              = {{ mysql_max_allowed_packet }}
 tmp_table_size                  = 256M
 max_heap_table_size             = 96M
 interactive_timeout             = 600
@@ -157,19 +157,19 @@ loose-group_replication_enforce_update_everywhere_checks    = ON
 {% endif %}
 
 report_host                             = {{ hostvars[inventory_hostname]['ansible_'+mysql_interface].ipv4.address if mysql_interface else ansible_default_ipv4.address }}
-report_port                             = 3306
+report_port                             = {{ mysql_port }}
 
 [client]
-default_character_set           = utf8mb4
-port                            = 3306
+default_character_set           = {{ mysql_character_set_server }}
+port                            = {{ mysql_port }}
 socket                          = {{ mysql_socket }}
 
 [mysql]
-default_character_set           = utf8mb4
-port                            = 3306
+default_character_set           = {{ mysql_character_set_server }}
+port                            = {{ mysql_port }}
 socket                          = {{ mysql_socket }}
 
 [mysqldump]
 max_allowed_packet              = 16M
-port                            = 3306
+port                            = {{ mysql_port }}
 socket                          = {{ mysql_socket }}

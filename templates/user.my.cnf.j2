@@ -2,10 +2,10 @@
 user                    = root
 password                = {{ mysql_root_password }}
 socket                  = {{ mysql_socket }}
-default-character-set   = utf8mb4
+default-character-set   = {{ mysql_character_set_server }}
 
 [mysqladmin]
 user                    = root
 password                = {{ mysql_root_password }}
 socket                  = {{ mysql_socket }}
-default-character-set   = utf8mb4
+default-character-set   = {{ mysql_character_set_server }}
