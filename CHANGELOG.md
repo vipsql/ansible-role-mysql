@@ -2,6 +2,31 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.3.0](https://github.com/daixijun/ansible-role-mysql/compare/v2.2.1...v2.3.0) (2020-06-28)
+
+
+### Features
+
+* 创建db时可以通过 datafile 参数指定需要导入的sql文件, 仅在db为空时导入 ([1a4c0af](https://github.com/daixijun/ansible-role-mysql/commit/1a4c0af01d00609b8fd9bcdcafca4ee92bb6ae4b))
+* 添加 mysql_inventory_group 参数用于指定 inventory 中的组名 ([29d8cbc](https://github.com/daixijun/ansible-role-mysql/commit/29d8cbc038c968355425d54aad39cbffe79e921e))
+* 添加 mysql_port 与 mysql_bind_address 参数用于自定义端口及监听 ([1ec2822](https://github.com/daixijun/ansible-role-mysql/commit/1ec282298e05569f1cff300f2be40271a24fba36))
+* 移除 library, 依赖于 collection ([c6402a9](https://github.com/daixijun/ansible-role-mysql/commit/c6402a9c25c492b4538481ac306ad2dcd38cf938))
+* **proxysql:** 添加 proxysql 相关配置 ([0210219](https://github.com/daixijun/ansible-role-mysql/commit/0210219f2f2765e4fa722d3c4b83768bd8d34ee6))
+
+
+### Bug Fixes
+
+* 使用 groups['mysql'] 代替 ansible_play_hosts 变量 ([f135714](https://github.com/daixijun/ansible-role-mysql/commit/f13571409137047bf4a1ddcc4638e55e5ae3fb18))
+* 修复 data file 加载逻辑 ([2dcafc9](https://github.com/daixijun/ansible-role-mysql/commit/2dcafc9bc3508914e0f93ff7cad94ee1ea9a07eb))
+* 修复 datafile 判断 ([ed628b1](https://github.com/daixijun/ansible-role-mysql/commit/ed628b1662f62faf14419615ca24e2046df0b09d))
+* 修复 mysql_cluster_role 未支持 secondary 的问题 ([d77c483](https://github.com/daixijun/ansible-role-mysql/commit/d77c4835fb9bf4a7f747fad7db341e2014ae747d))
+* 修复 mysql-shell 下载安装包时取消become ([79e8f08](https://github.com/daixijun/ansible-role-mysql/commit/79e8f08d3658f8fc4f20e1bfb23144903280c3e4))
+* 修复组复制中 mysql_repl_user 变量未使用的问题 ([13bad35](https://github.com/daixijun/ansible-role-mysql/commit/13bad358e6b124c14716a57c6c291610fbc3201c))
+* 修改 sys.gr_member_routing_candidate_status 判断逻辑 ([1ca3329](https://github.com/daixijun/ansible-role-mysql/commit/1ca3329cf8aa4d19a4f8771e7f2c409fe7c8be07))
+* 创建db时支持设置自定义字符集 ([ffa2050](https://github.com/daixijun/ansible-role-mysql/commit/ffa2050fe445de4361396723818bae1fae09cd26))
+* 添加 mysqladmin 相关认证配置项 ([2deeef1](https://github.com/daixijun/ansible-role-mysql/commit/2deeef163efc9f3be56105849fd727ad42882590))
+* 确保组复制名称为小写uuid值 ([0b47f06](https://github.com/daixijun/ansible-role-mysql/commit/0b47f062297ddcd49343e348b1beb021e1cfa1b2))
+
 ### [2.2.1](https://github.com/daixijun/ansible-role-mysql/compare/v2.2.0...v2.2.1) (2020-06-22)
 
 
