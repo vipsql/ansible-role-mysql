@@ -12,17 +12,6 @@
     channel: group_replication_recovery
   when:
     - group_replication_status.rowcount[0]|int == 0
-    # - group_replication_status.query_result[0][0]['service_state'] != 'ON'
-
-# - name: Verify that the primary node status
-#   mysql_query:
-#     query: SELECT * FROM performance_schema.replication_group_members where member_role='PRIMARY'
-#   run_once: true
-#   register: mysql_mgr_primary_status
-#   when:
-#     - (mysql_inventory_group+'_primary' in groups and inventory_hostname in groups[mysql_inventory_group+'_primary']) or groups[mysql_inventory_group].index(inventory_hostname) == 0
-#   tags:
-#     - skip_ansible_lint
 
 - name: Bootstrap group replication on first primary node
   community.general.mysql_query:
@@ -34,18 +23,8 @@
   when:
     - (mysql_inventory_group+'_primary' in groups and inventory_hostname in groups[mysql_inventory_group+'_primary']) or groups[mysql_inventory_group].index(inventory_hostname) == 0
     - group_replication_status.rowcount[0]|int == 0
-    # - group_replication_status.query_result[0][0]['service_state'] != 'ON'
   tags:
     - skip_ansible_lint
-
-# - name: Verify that the member nodes status
-#   mysql_query:
-#     query: SELECT member_state FROM performance_schema.replication_group_members where member_id=@@server_uuid
-#   register: mysql_mgr_member_status
-#   when:
-#     - (mysql_inventory_group+'_secondary' in groups and inventory_hostname in groups[mysql_inventory_group+'_secondary']) or groups[mysql_inventory_group].index(inventory_hostname) != 0
-#   tags:
-#     - skip_ansible_lint
 
 - name: Startting group replication member nodes
   community.general.mysql_query:
@@ -53,9 +32,17 @@
   when:
     - (mysql_inventory_group+'_secondary' in groups and inventory_hostname in groups[mysql_inventory_group+'_secondary']) or groups[mysql_inventory_group].index(inventory_hostname) != 0
     - group_replication_status.rowcount[0]|int == 0
-    # - group_replication_status.query_result[0][0]['service_state'] != 'ON'
   tags:
     - skip_ansible_lint
+
+- name: Query view sys.gr_member_routing_candidate_status
+  community.general.mysql_query:
+    query: SELECT * FROM information_schema.views WHERE table_schema = 'sys' AND table_name = 'gr_member_routing_candidate_status'
+  register: gr_member_routing_candidate_status
+  run_once: true
+  when:
+    - mysql_proxysql_config|bool
+    - inventory_hostname in groups[mysql_inventory_group]
 
 - name: Copy gr_member_routing_candidate_status.sql
   copy:
@@ -65,21 +52,20 @@
   when:
     - mysql_proxysql_config|bool
     - (mysql_inventory_group+'_primary' in groups and inventory_hostname in groups[mysql_inventory_group+'_primary']) or groups[mysql_inventory_group].index(inventory_hostname) == 0
-    - mysql_initialize_status is not skipped
+    - gr_member_routing_candidate_status.rowcount[0]|int == 0
 
 - name: Create internal view sys.gr_member_routing_candidate_status for monitoring
   community.general.mysql_db:
     name: all
     target: /tmp/gr_member_routing_candidate_status.sql
     state: import
-  # no_log: yes
   environment:
     PATH: /usr/local/mysql/bin:{{ ansible_env.PATH }}
   run_once: true
   when:
     - mysql_proxysql_config|bool
     - (mysql_inventory_group+'_primary' in groups and inventory_hostname in groups[mysql_inventory_group+'_primary']) or groups[mysql_inventory_group].index(inventory_hostname) == 0
-    - mysql_initialize_status is not skipped
+    - gr_member_routing_candidate_status.rowcount[0]|int == 0
 
 - name: Create proxysql monitor account
   community.general.mysql_user:
