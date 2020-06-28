@@ -7,7 +7,7 @@
 - name: Change master for group replication channel
   community.general.mysql_replication:
     mode: changemaster
-    master_user: repl
+    master_user: "{{ mysql_repl_user }}"
     master_password: "{{ mysql_repl_password }}"
     channel: group_replication_recovery
   when:
