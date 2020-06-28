@@ -47,9 +47,9 @@
     - name: Assert that slave hosts
       assert:
         that:
-          - _info.slave_hosts|length == groups['mysql_secondary']|length
+          - _info.slave_hosts|length == groups[mysql_inventory_group+'_secondary']|length
       when:
-        - "('mysql_primary' in groups and inventory_hostname in groups['mysql_primary']) or groups['mysql'].index(inventory_hostname) == 0"
+        - "(mysql_inventory_group+'_primary' in groups and inventory_hostname in groups[mysql_inventory_group+'_primary']) or groups[mysql_inventory_group].index(inventory_hostname) == 0"
 
     - name: Asset that slave status
       assert:
@@ -58,9 +58,9 @@
           - _info.slave_status[master_host]['3306']['repl']['Slave_IO_Running'] == 'Yes'
           - _info.slave_status[master_host]['3306']['repl']['Slave_SQL_Running'] == 'Yes'
       vars:
-        master_host: "{{ hostvars[groups['mysql'][0]].ansible_default_ipv4.address }}"
+        master_host: "{{ hostvars[groups[mysql_inventory_group][0]].ansible_default_ipv4.address }}"
       when:
-        - "('mysql_secondary' in groups and inventory_hostname in groups['mysql_secondary']) or groups['mysql'].index(inventory_hostname) > 0"
+        - "(mysql_inventory_group+'_secondary' in groups and inventory_hostname in groups[mysql_inventory_group+'_secondary']) or groups[mysql_inventory_group].index(inventory_hostname) > 0"
 
     - name: Assert that users
       assert:

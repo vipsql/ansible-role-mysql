@@ -1,6 +1,9 @@
 ---
 mysql_version: 8.0.20
 mysql_download_url: https://dev.mysql.com/get/Downloads/MySQL-8.0/mysql-{{ mysql_version }}-el{{ ansible_distribution_major_version }}-{{ ansible_architecture }}.tar.gz
+mysql_inventory_group: mysql # Ansible 主机清单中的组名， 默认为 `mysql`， 其对应的 primary 与 secondary 组名分别为 `{{ mysql_inventory_group }}_primary` 与 `{{ mysql_inventory_group }}_secondary`
+
+# 全局设置
 mysql_datadir: /data/mysql
 mysql_logdir: /var/log/mysqld
 mysql_pidfile: /var/run/mysqld/mysqld.pid

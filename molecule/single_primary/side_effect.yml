@@ -9,4 +9,4 @@
         - STOP GROUP_REPLICATION
         - START GROUP_REPLICATION
       when:
-        - ('mysql_primary' in groups and inventory_hostname in groups['mysql_primary']) or groups['mysql'].index(inventory_hostname) == 0
+        - "(mysql_inventory_group+'_primary' in groups and inventory_hostname in groups[mysql_inventory_group+'_primary']) or groups[mysql_inventory_group].index(inventory_hostname) == 0"
