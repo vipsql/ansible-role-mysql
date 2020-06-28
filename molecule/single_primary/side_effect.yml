@@ -4,9 +4,9 @@
   tasks:
     - name: Restart Primary
       community.general.mysql_query:
-        query: "{{ item }}"
-      loop:
-        - STOP GROUP_REPLICATION
-        - START GROUP_REPLICATION
+        query:
+          - STOP GROUP_REPLICATION
+          - START GROUP_REPLICATION
+      run_once: true
       when:
-        - "(mysql_inventory_group+'_primary' in groups and inventory_hostname in groups[mysql_inventory_group+'_primary']) or groups[mysql_inventory_group].index(inventory_hostname) == 0"
+        - groups['mysql'].index(inventory_hostname) == 0

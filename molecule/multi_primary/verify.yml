@@ -56,4 +56,4 @@
       community.general.mysql_query:
         query: SELECT * FROM performance_schema.replication_group_members WHERE MEMBER_STATE = 'ONLINE'
       register: _mgr_res
-      failed_when: _mgr_res.rowcount[0] != groups[mysql_inventory_group] | length
+      failed_when: _mgr_res.rowcount[0] != groups['mysql'] | length
