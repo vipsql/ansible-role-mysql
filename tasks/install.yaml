@@ -1,0 +1,139 @@
+---
+- name: Download mysql package
+  get_url:
+    url: "{{ mysql_download_url }}"
+    dest: "{{ playbook_dir }}/files/{{ mysql_download_url | basename }}"
+    # checksum: "md5:{{ mysql_download_url }}.md5"
+    timeout: 300
+  become: false
+  run_once: true
+  delegate_to: localhost
+  when:
+    - not _mysql_stat.stat.exists
+  register: _mysql_package
+
+- name: Unarchive mysql binary package
+  unarchive:
+    src: "files/{{ mysql_download_url | basename }}"
+    dest: /usr/local/
+    creates: /usr/local/mysql-{{ mysql_version }}-el7-x86_64
+    remote_src: false
+    owner: mysql
+    group: mysql
+  when:
+    - not _mysql_stat.stat.exists
+  register: _mysql_unarchive
+
+- name: Symlink /usr/local/mysql-{{ mysql_version }}-el7-x86_64 to /usr/local/mysql
+  file:
+    src: /usr/local/mysql-{{ mysql_version }}-el7-x86_64
+    dest: /usr/local/mysql
+    owner: mysql
+    group: mysql
+    state: link
+    force: True
+  when:
+    - _mysql_unarchive is not skipped
+  tags:
+    - skip_ansible_lint
+
+- name: Ensure directories
+  file:
+    path: "{{ item }}"
+    state: directory
+    recurse: true
+    owner: mysql
+    group: mysql
+  loop:
+    - /usr/local/mysql/etc
+    - "{{ mysql_datadir }}"
+    - "{{ mysql_logdir }}"
+    - "{{ mysql_pidfile | dirname }}"
+    - "{{ mysql_socket | dirname }}"
+
+- name: Setting PATH environment variable
+  copy:
+    content: "export PATH=/usr/local/mysql/bin:$PATH"
+    dest: /etc/profile.d/mysql.sh
+
+- name: Generate my.cnf
+  template:
+    src: my.cnf.j2
+    dest: /usr/local/mysql/etc/my.cnf
+    owner: mysql
+    group: mysql
+    validate: /usr/local/mysql/bin/mysqld --defaults-file=%s --validate-config
+  notify:
+    - restart mysqld
+
+- name: Generate logrotate for logs
+  template:
+    src: mysql-log-rotate.j2
+    dest: /etc/logrotate.d/mysql
+    owner: root
+    group: root
+    mode: "644"
+
+- name: Generate mysql startup script
+  template:
+    src: mysqld.init.j2
+    dest: /etc/init.d/mysqld
+    mode: "755"
+
+- name: Check initialize status
+  shell: ls -lA {{ mysql_datadir }} | grep -v total | wc -l
+  register: need_to_initialize
+  changed_when: false
+  tags:
+    - skip_ansible_lint
+
+- name: Initializing the Data Directory
+  shell: /usr/local/mysql/bin/mysqld --initialize-insecure --user=mysql --basedir=/usr/local/mysql --datadir={{ mysql_datadir }}
+  register: mysql_initialize_status
+  when:
+    - not need_to_initialize is skipped
+    - need_to_initialize.stdout|int == 0
+  tags:
+    - skip_ansible_lint
+
+- name: Run handlers to restart MySQL
+  meta: flush_handlers
+  no_log: yes
+
+- name: Update root password
+  community.general.mysql_user:
+    name: root
+    host_all: true
+    password: "{{ mysql_root_password }}"
+    check_implicit_admin: yes
+    login_user: root
+    login_unix_socket: "{{ mysql_socket }}"
+    sql_log_bin: false
+  # no_log: true
+  when: mysql_initialize_status is not skipped
+
+# 一定要在更新完root密码后才生成，否则更新密码时会认证失败
+- name: Generate ~/.my.cnf
+  template:
+    src: user.my.cnf.j2
+    dest: /root/.my.cnf
+    owner: root
+    group: root
+    mode: "400"
+  no_log: True
+
+- name: Removes all anonymous user accounts
+  community.general.mysql_user:
+    name: ""
+    host_all: yes
+    sql_log_bin: false
+    state: absent
+
+- name: Ensure replication user
+  community.general.mysql_user:
+    name: "{{ mysql_repl_user | default('repl') }}"
+    host: "%"
+    password: "{{ mysql_repl_password }}"
+    priv: "*.*:REPLICATION SLAVE"
+    sql_log_bin: false
+    state: present

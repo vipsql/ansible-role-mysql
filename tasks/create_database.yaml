@@ -1,0 +1,58 @@
+---
+- name: Ensure business databases
+  community.general.mysql_db:
+    name: "{{ item.name }}"
+    collation: "{{ item.collation | default('utf8mb4_general_ci') }}"
+    encoding: "{{ item.encoding | default('utf8mb4') }}"
+    single_transaction: "{{ item.single_transaction | default(omit) }}"
+    state: "{{ item.state | default('present') }}"
+  run_once: true
+  loop: "{{ mysql_databases }}"
+  when:
+    - mysql_databases|length > 0
+    - "(mysql_inventory_group+'_primary' in groups and inventory_hostname in groups[mysql_inventory_group+'_primary']) or groups[mysql_inventory_group].index(inventory_hostname) == 0"
+
+- name: Show tables from database
+  community.general.mysql_query:
+    login_db: "{{ item.name }}"
+    query: "SHOW TABLES"
+  run_once: true
+  register: _show_tables
+  loop: "{{ mysql_databases }}"
+  when:
+    - mysql_databases|length > 0
+    - "(mysql_inventory_group+'_primary' in groups and inventory_hostname in groups[mysql_inventory_group+'_primary']) or groups[mysql_inventory_group].index(inventory_hostname) == 0"
+    - item.datafile is defined
+
+- name: Copy data file to target machine
+  copy:
+    src: "{{ item.item.datafile }}"
+    dest: "/tmp/{{ item.item.datafile | basename }}"
+  run_once: true
+  loop: "{{ _show_tables.results }}"
+  when:
+    - "(mysql_inventory_group+'_primary' in groups and inventory_hostname in groups[mysql_inventory_group+'_primary']) or groups[mysql_inventory_group].index(inventory_hostname) == 0"
+    - ('skipped' not in item or not item.skipped) and item.rowcount[0]|int == 0
+
+- name: Import data file
+  community.general.mysql_db:
+    name: "{{ item.item.name }}"
+    target: "/tmp/{{ item.item.datafile | basename }}"
+    state: import
+  environment:
+    PATH: "/usr/local/mysql/bin:{{ ansible_env.PATH }}"
+  run_once: true
+  loop: "{{ _show_tables.results }}"
+  when:
+    - "(mysql_inventory_group+'_primary' in groups and inventory_hostname in groups[mysql_inventory_group+'_primary']) or groups[mysql_inventory_group].index(inventory_hostname) == 0"
+    - ('skipped' not in item or not item.skipped) and item.rowcount[0]|int == 0
+
+- name: Remove data file
+  file:
+    path: "/tmp/{{ item.item.datafile | basename }}"
+    state: absent
+  run_once: true
+  loop: "{{ _show_tables.results }}"
+  when:
+    - "(mysql_inventory_group+'_primary' in groups and inventory_hostname in groups[mysql_inventory_group+'_primary']) or groups[mysql_inventory_group].index(inventory_hostname) == 0"
+    - ('skipped' not in item or not item.skipped) and item.rowcount[0]|int == 0

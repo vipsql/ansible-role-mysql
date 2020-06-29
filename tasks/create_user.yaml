@@ -1,0 +1,24 @@
+---
+- name: Ensure business users
+  community.general.mysql_user:
+    name: "{{ item.name }}"
+    host: "{{ item.host | default('%') }}"
+    password: "{{ item.password | default(omit) }}"
+    encrypted: "{{ item.encrypted | default(omit) }}"
+    priv: "{{ item.priv | default(omit) }}"
+    append_privs: "{{ item.append_privs | default(omit) }}"
+    update_password: "{{ item.update_password | default(omit) }}"
+    plugin: "{{ item.plugin | default(omit) }}"
+    plugin_hash_string: "{{ item.plugin_hash_string | default(omit) }}"
+    plugin_auth_string: "{{ item.plugin_auth_string | default(omit) }}"
+    resource_limits: "{{ item.resource_limits | default(omit) }}"
+    state: "{{ item.state | default(omit) }}"
+    sql_log_bin: "{{ False if mysql_cluster_type == 'ms' and mysql_replication_based == 'binlog' else True  }}"
+  run_once: "{{ False if mysql_cluster_type == 'ms' and mysql_replication_based == 'binlog' else True }}"
+  no_log: yes
+  loop: "{{ mysql_users }}"
+  when:
+    - mysql_users|length > 0
+    - "((mysql_cluster_type == 'mgr' or mysql_replication_based == 'gtid') and (mysql_inventory_group+'_primary' in groups and inventory_hostname in groups[mysql_inventory_group+'_primary']) or groups[mysql_inventory_group].index(inventory_hostname) == 0) or (mysql_cluster_type == 'ms' and mysql_replication_based == 'binlog')"
+  tags:
+    - molecule-idempotence-notest
