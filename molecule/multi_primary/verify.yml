@@ -35,7 +35,10 @@
       community.general.mysql_info:
         filter:
           - users
-      no_log: True
+          - databases
+        exclude_fields: db_size
+        return_empty_dbs: yes
+      no_log: true
       register: _info
 
     - name: Assert that users
@@ -43,14 +46,10 @@
         that:
           - "'user1' in _info.users['%']"
 
-    - name: Show databases
-      community.general.mysql_query:
-        query: SHOW DATABASES
-      register: _res
-      vars:
-        database:
-          Database: db1
-      failed_when: database not in _res.query_result[0]
+    - name: Assert that databases
+      assert:
+        that:
+          - "'db1' in _info.databases"
 
     - name: Query replication group members
       community.general.mysql_query:

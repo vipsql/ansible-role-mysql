@@ -20,8 +20,9 @@
       - "START GROUP_REPLICATION;"
       - "SET GLOBAL group_replication_bootstrap_group=OFF;"
   run_once: true
+  delegate_to: "{{ _primary_node }}"
   when:
-    - (mysql_inventory_group+'_primary' in groups and inventory_hostname in groups[mysql_inventory_group+'_primary']) or groups[mysql_inventory_group].index(inventory_hostname) == 0
+    # - (mysql_inventory_group+'_primary' in groups and inventory_hostname in groups[mysql_inventory_group+'_primary']) or groups[mysql_inventory_group].index(inventory_hostname) == 0
     - group_replication_status.rowcount[0]|int == 0
   tags:
     - skip_ansible_lint
@@ -30,8 +31,9 @@
   community.general.mysql_query:
     query: "START GROUP_REPLICATION;"
   when:
-    - (mysql_inventory_group+'_secondary' in groups and inventory_hostname in groups[mysql_inventory_group+'_secondary']) or groups[mysql_inventory_group].index(inventory_hostname) != 0
+    # - (mysql_inventory_group+'_secondary' in groups and inventory_hostname in groups[mysql_inventory_group+'_secondary']) or groups[mysql_inventory_group].index(inventory_hostname) != 0
     - group_replication_status.rowcount[0]|int == 0
+    - inventory_hostname != _primary_node
   tags:
     - skip_ansible_lint
 
@@ -49,9 +51,10 @@
     src: gr_member_routing_candidate_status.sql
     dest: /tmp/gr_member_routing_candidate_status.sql
   run_once: true
+  delegate_to: "{{ _primary_node }}"
   when:
     - mysql_proxysql_config|bool
-    - (mysql_inventory_group+'_primary' in groups and inventory_hostname in groups[mysql_inventory_group+'_primary']) or groups[mysql_inventory_group].index(inventory_hostname) == 0
+    # - (mysql_inventory_group+'_primary' in groups and inventory_hostname in groups[mysql_inventory_group+'_primary']) or groups[mysql_inventory_group].index(inventory_hostname) == 0
     - gr_member_routing_candidate_status.rowcount[0]|int == 0
 
 - name: Create internal view sys.gr_member_routing_candidate_status for monitoring
@@ -62,9 +65,10 @@
   environment:
     PATH: /usr/local/mysql/bin:{{ ansible_env.PATH }}
   run_once: true
+  delegate_to: "{{ _primary_node }}"
   when:
     - mysql_proxysql_config|bool
-    - (mysql_inventory_group+'_primary' in groups and inventory_hostname in groups[mysql_inventory_group+'_primary']) or groups[mysql_inventory_group].index(inventory_hostname) == 0
+    # - (mysql_inventory_group+'_primary' in groups and inventory_hostname in groups[mysql_inventory_group+'_primary']) or groups[mysql_inventory_group].index(inventory_hostname) == 0
     - gr_member_routing_candidate_status.rowcount[0]|int == 0
 
 - name: Create proxysql monitor account
@@ -74,9 +78,11 @@
     host: "%"
     priv: "sys.*:SELECT"
     state: present
+  run_once: true
+  delegate_to: "{{ _primary_node }}"
   when:
     - mysql_proxysql_config|bool
-    - (mysql_inventory_group+'_primary' in groups and inventory_hostname in groups[mysql_inventory_group+'_primary']) or groups[mysql_inventory_group].index(inventory_hostname) == 0
+    # - (mysql_inventory_group+'_primary' in groups and inventory_hostname in groups[mysql_inventory_group+'_primary']) or groups[mysql_inventory_group].index(inventory_hostname) == 0
 
 - name: Show Group Replication status
   community.general.mysql_query:

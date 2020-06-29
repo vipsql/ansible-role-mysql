@@ -34,15 +34,15 @@
     - name: Gathers information about MySQL servers
       community.general.mysql_info:
         filter:
-          - "!databases"
-          - "!settings"
-          - "!engines"
+          - "databases"
           - "users"
           - "slave_status"
           - "slave_hosts"
           - "version"
+        exclude_fields: db_size
+        return_empty_dbs: yes
       register: _info
-      no_log: True
+      no_log: true
 
     - name: Assert that slave hosts
       assert:
@@ -62,16 +62,12 @@
       when:
         - groups['mysql'].index(inventory_hostname) > 0
 
-    # - name: Assert that users
-    #   assert:
-    #     that:
-    #       - "'monitor' in _info.users['%']"
+    - name: Assert that users
+      assert:
+        that:
+          - "'user1' in _info.users['%']"
 
-    - name: Show databases
-      community.general.mysql_query:
-        query: SHOW DATABASES
-      register: _res
-      vars:
-        database:
-          Database: db1
-      failed_when: database not in _res.query_result[0]
+    - name: Assert that databases
+      assert:
+        that:
+          - "'db1' in _info.databases"

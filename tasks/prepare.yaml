@@ -32,3 +32,38 @@
   package:
     name: "{{ mysql_dependencies }}"
     state: present
+
+- name: Query group repolicaton primary node
+  community.general.mysql_query:
+    query: SELECT member_host FROM performance_schema.replication_group_members WHERE member_role = 'PRIMARY'
+  register: _gr_primary_status
+  run_once: true
+  ignore_errors: true
+  when:
+    - mysql_cluster_type == 'mgr'
+
+- name: Set primary node facts
+  set_fact:
+    _primary_node: |-
+      {%- set primary_group_name = mysql_inventory_group + '_primary' -%}
+      {%- if mysql_cluster_type == 'mgr' -%}
+        {%- if not _gr_primary_status.failed and _gr_primary_status.rowcount[0] == 1 -%}
+          {%- for host in groups[mysql_inventory_group] -%}
+            {%- if hostvars[host]['ansible_default_ipv4']['address'] == _gr_primary_status.query_result[0][0].member_host -%}
+            {{ host }}
+            {%- endif -%}
+          {%- endfor -%}
+        {%- else -%}
+          {%- if primary_group_name in groups -%}
+            {{ hostvars[groups[primary_group_name][0]]['inventory_hostname'] }}
+          {%- else -%}
+            {{ hostvars[groups[mysql_inventory_group][0]]['inventory_hostname'] }}
+          {%- endif -%}
+        {%- endif -%}
+      {%- else -%}
+        {%- if primary_group_name in groups -%}
+          {{ hostvars[groups[primary_group_name][0]]['inventory_hostname'] }}
+        {%- else -%}
+          {{ hostvars[groups[mysql_inventory_group][0]]['inventory_hostname'] }}
+        {%- endif -%}
+      {% endif -%}

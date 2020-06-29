@@ -3,3 +3,5 @@
   file:
     path: /tmp/gr_member_routing_candidate_status.sql
     state: absent
+  delegate_to: "{{ _primary_node }}"
+  run_once: true

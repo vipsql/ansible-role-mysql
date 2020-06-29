@@ -3,7 +3,7 @@
   get_url:
     url: https://dev.mysql.com/get/Downloads/MySQL-Shell/mysql-shell-{{ mysql_version }}-1.el7.x86_64.rpm
     dest: "{{ playbook_dir }}/files/mysql-shell-{{ mysql_version }}-1.el7.x86_64.rpm"
-  run_once: True
+  run_once: true
   delegate_to: localhost
   become: false
 
