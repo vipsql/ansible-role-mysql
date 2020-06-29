@@ -3,17 +3,26 @@
   assert:
     that:
       - mysql_root_password|string|length > 0
+
+- name: Check mysql_repl_password
+  assert:
+    that:
       - mysql_repl_password|string|length > 0
+  when:
+    - mysql_inventory_group in groups
+    - groups[mysql_inventory_group]|length > 1
+
+- name: Check mysql_group_replication_name
+  assert:
+    that:
       - mysql_group_replication_name|string|length > 0
-  run_once: True
-  delegate_to: localhost
+  when:
+    - mysql_cluster_type == 'mgr'
 
 - name: Check mysql_innodb_cluster_password
   assert:
     that:
       - mysql_innodb_cluster_password|string|length > 0
-  run_once: True
-  delegate_to: localhost
   when:
     - mysql_cluster_type == 'mgr'
     - mysql_innodb_cluster_enable|bool
@@ -22,7 +31,5 @@
   assert:
     that:
       - mysql_proxysql_monitor_password|string|length > 0
-  run_once: True
-  delegate_to: localhost
   when:
     - mysql_proxysql_config|bool
