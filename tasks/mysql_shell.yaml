@@ -1,20 +1,20 @@
 ---
 - name: Download mysql-shell package
   get_url:
-    url: https://dev.mysql.com/get/Downloads/MySQL-Shell/mysql-shell-{{ mysql_version }}-1.el7.x86_64.rpm
-    dest: "{{ playbook_dir }}/files/mysql-shell-{{ mysql_version }}-1.el7.x86_64.rpm"
+    url: "{{ mysql_shell_download_url }}"
+    dest: "{{ playbook_dir }}/files/{{ mysql_shell_download_url | basename }}"
   run_once: true
   delegate_to: localhost
   become: false
 
 - name: Copy mysql-shell package to target server
   copy:
-    src: "{{ playbook_dir }}/files/mysql-shell-{{ mysql_version }}-1.el7.x86_64.rpm"
-    dest: /usr/local/src/mysql-shell-{{ mysql_version }}-1.el7.x86_64.rpm
+    src: "{{ playbook_dir }}/files/{{ mysql_shell_download_url | basename }}"
+    dest: /usr/local/src/{{ mysql_shell_download_url | basename }}
 
 - name: Install mysql-shell
   yum:
-    name: /usr/local/src/mysql-shell-{{ mysql_version }}-1.el7.x86_64.rpm
+    name: /usr/local/src/{{ mysql_shell_download_url | basename }}
     state: present
 
 - name: Create Innodb Cluster admin user
