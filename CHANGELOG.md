@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.3.2](https://github.com/daixijun/ansible-role-mysql/compare/v2.3.1...v2.3.2) (2020-07-02)
+
+
+### Bug Fixes
+
+* 查询主节点时使用委托方式，解决 play 中主机不完全用于mysql时会造成跳过的情况 ([27ac753](https://github.com/daixijun/ansible-role-mysql/commit/27ac75385042c3f042b14f122fce47e9fea3b8bf))
+
 ### [2.3.1](https://github.com/daixijun/ansible-role-mysql/compare/v2.3.0...v2.3.1) (2020-06-30)
 
 
