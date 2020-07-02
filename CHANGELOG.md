@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.3.3](https://github.com/daixijun/ansible-role-mysql/compare/v2.3.2...v2.3.3) (2020-07-02)
+
+
+### Bug Fixes
+
+* 修复 delegate_to 为 localhost 时可能会被处于指定组外的主机问题 ([6731f67](https://github.com/daixijun/ansible-role-mysql/commit/6731f671cf4c0314b5766c7a6cc0251fa45e5b15))
+* 添加 mysql_shell_download_url 变量用于自定义 rpm 包下载地址 ([4604875](https://github.com/daixijun/ansible-role-mysql/commit/4604875898d201f2681710d6fc21ff791003dfa4))
+
 ### [2.3.2](https://github.com/daixijun/ansible-role-mysql/compare/v2.3.1...v2.3.2) (2020-07-02)
 
 
