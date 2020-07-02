@@ -10,6 +10,7 @@
   delegate_to: localhost
   when:
     - not _mysql_stat.stat.exists
+    - inventory_hostname in groups[mysql_inventory_group]
   register: _mysql_package
 
 - name: Unarchive mysql binary package

@@ -6,6 +6,8 @@
   run_once: true
   delegate_to: localhost
   become: false
+  when:
+    - inventory_hostname in groups[mysql_inventory_group]
 
 - name: Copy mysql-shell package to target server
   copy:

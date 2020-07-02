@@ -3,6 +3,8 @@
   import_tasks: check_vars.yaml
   run_once: true
   delegate_to: localhost
+  when:
+    - inventory_hostname in groups[mysql_inventory_group]
 
 - name: Import prepare tasks
   import_tasks: prepare.yaml
@@ -21,7 +23,6 @@
   when:
     - mysql_cluster_type == 'mgr'
     - mysql_innodb_cluster_enable|bool
-    # - (mysql_inventory_group+'_primary' in groups and inventory_hostname in groups[mysql_inventory_group+'_primary']) or groups[mysql_inventory_group].index(inventory_hostname) == 0
 
 - name: Import replication tasks
   import_tasks: master_slave.yaml
@@ -37,3 +38,5 @@
 
 - name: Import Cleanup tasks
   import_tasks: cleanup.yaml
+  delegate_to: "{{ _primary_node }}"
+  run_once: true
