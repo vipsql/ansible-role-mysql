@@ -38,6 +38,7 @@
     query: SELECT member_host FROM performance_schema.replication_group_members WHERE member_role = 'PRIMARY'
   register: _gr_primary_status
   run_once: true
+  delegate_to: "{{ hostvars[groups[mysql_inventory_group][0]]['inventory_hostname'] }}"
   ignore_errors: true
   when:
     - mysql_cluster_type == 'mgr'
@@ -47,7 +48,7 @@
     _primary_node: |-
       {%- set primary_group_name = mysql_inventory_group + '_primary' -%}
       {%- if mysql_cluster_type == 'mgr' -%}
-        {%- if not _gr_primary_status.failed and _gr_primary_status.rowcount[0] == 1 -%}
+        {%- if _gr_primary_status is not skipped and _gr_primary_status is not failed and _gr_primary_status.rowcount[0] >= 0 -%}
           {%- for host in groups[mysql_inventory_group] -%}
             {%- if hostvars[host]['ansible_default_ipv4']['address'] == _gr_primary_status.query_result[0][0].member_host -%}
             {{ host }}
