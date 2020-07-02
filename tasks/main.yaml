@@ -4,7 +4,7 @@
   run_once: true
   delegate_to: localhost
   when:
-    - inventory_hostname in groups[mysql_inventory_group]
+    - groups[mysql_inventory_group].index(inventory_hostname) == 0
 
 - name: Import prepare tasks
   import_tasks: prepare.yaml
